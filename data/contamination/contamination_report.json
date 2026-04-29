@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "train_count": 124,
+  "dev_count": 69,
+  "held_out_count": 10,
+  "checks": {
+    "ngram_overlap": {
+      "status": "PASS",
+      "n": 8,
+      "violations": []
+    },
+    "pair_id_uniqueness": {
+      "status": "PASS",
+      "violations": []
+    },
+    "probe_isolation": {
+      "status": "PASS",
+      "target_probes": [
+        "PROBE-A07",
+        "PROBE-E01",
+        "PROBE-E02",
+        "PROBE-E03",
+        "PROBE-G03",
+        "PROBE-B03",
+        "PROBE-B04",
+        "PROBE-D05"
+      ],
+      "covered_probes": [
+        "PROBE-A07",
+        "PROBE-B03",
+        "PROBE-B04",
+        "PROBE-C02",
+        "PROBE-C04",
+        "PROBE-D05",
+        "PROBE-E01",
+        "PROBE-E02",
+        "PROBE-E03",
+        "PROBE-G03"
+      ],
+      "violations": []
+    },
+    "time_shift": {
+      "status": "MANUAL_AUDIT",
+      "note": "Held-out pairs use synthetic contexts. Date references in held_out available_signals should be +60 days relative to train pairs. Manual audit required."
+    }
+  },
+  "total_violations": 0
+}

@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JudgePair",
+  "description": "One (chosen, rejected) preference pair for DPO judge training.",
+  "type": "object",
+  "required": [
+    "pair_id", "probe_id", "failure_type", "severity_tier",
+    "authoring_mode", "annotator", "split",
+    "context", "chosen", "rejected", "judge_label"
+  ],
+  "properties": {
+    "pair_id": {
+      "type": "string",
+      "pattern": "^[A-Z][0-9]{2}-[0-9]{3}$",
+      "description": "Unique identifier. Format: <PROBE_ID>-<NNN> e.g. A07-001"
+    },
+    "probe_id": {
+      "type": "string",
+      "enum": [
+        "PROBE-A07", "PROBE-E01", "PROBE-E02", "PROBE-E03", "PROBE-G03",
+        "PROBE-B03", "PROBE-B04", "PROBE-C02", "PROBE-C04", "PROBE-D05",
+        "PROBE-H01", "PROBE-H02", "PROBE-F02"
+      ]
+    },
+    "failure_type": {
+      "type": "string",
+      "enum": ["judgment", "generation", "trajectory"]
+    },
+    "severity_tier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "authoring_mode": {
+      "type": "string",
+      "enum": ["trace_derived", "programmatic", "multi_llm", "hand_authored"]
+    },
+    "annotator": {
+      "type": "string",
+      "enum": ["bethelhem", "gpt-4o", "claude-3-5-sonnet", "gemini-1.5-pro"]
+    },
+    "split": {
+      "type": "string",
+      "enum": ["train", "dev", "held_out"]
+    },
+    "context": {
+      "type": "object",
+      "required": [
+        "prospect_id", "company", "headcount", "funding_stage",
+        "funding_amount_usd", "funding_confidence",
+        "disqualifiers", "opt_out_channels",
+        "thread_id", "recipient_role", "available_signals"
+      ],
+      "properties": {
+        "prospect_id": { "type": "string" },
+        "company": { "type": "string" },
+        "headcount": { "type": "integer", "minimum": 0 },
+        "funding_stage": {
+          "type": "string",
+          "enum": ["seed", "series_a", "series_b", "series_c", "public"]
+        },
+        "funding_amount_usd": { "type": "integer", "minimum": 0 },
+        "funding_confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low", "insufficient_signal"]
+        },
+        "disqualifiers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "opt_out_channels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["email", "sms", "linkedin", "all"]
+          }
+        },
+        "thread_id": { "type": "string" },
+        "recipient_role": {
+          "type": "string",
+          "enum": ["founder", "cto", "vp_eng", "c_level", "other"]
+        },
+        "available_signals": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "chosen": {
+      "$ref": "#/definitions/side"
+    },
+    "rejected": {
+      "$ref": "#/definitions/side"
+    },
+    "judge_label": {
+      "type": "object",
+      "required": ["chosen_score", "rejected_score", "annotator_agreement", "kappa_contribution"],
+      "properties": {
+        "chosen_score": { "type": "integer", "const": 1 },
+        "rejected_score": { "type": "integer", "const": 0 },
+        "annotator_agreement": { "type": "boolean" },
+        "kappa_contribution": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      }
+    }
+  },
+  "definitions": {
+    "side": {
+      "type": "object",
+      "required": ["action", "output", "rationale"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["suppress", "escalate", "send", "regenerate"]
+        },
+        "output": { "type": "string" },
+        "rationale": { "type": "string" }
+      }
+    }
+  }
+}

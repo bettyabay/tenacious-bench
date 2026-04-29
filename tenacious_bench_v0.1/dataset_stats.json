@@ -1,0 +1,103 @@
+{
+  "version": "v0.1",
+  "total_pairs": 203,
+  "splits": {
+    "train": {
+      "count": 124,
+      "pct": 61.1,
+      "probe_distribution": {
+        "PROBE-A07": 13,
+        "PROBE-B03": 11,
+        "PROBE-B04": 8,
+        "PROBE-C02": 12,
+        "PROBE-C04": 11,
+        "PROBE-D05": 11,
+        "PROBE-E01": 10,
+        "PROBE-E02": 13,
+        "PROBE-E03": 13,
+        "PROBE-G03": 22
+      },
+      "mode_distribution": {
+        "hand_authored": 17,
+        "programmatic": 55,
+        "trace_derived": 52
+      }
+    },
+    "dev": {
+      "count": 69,
+      "pct": 34.0,
+      "probe_distribution": {
+        "PROBE-A07": 8,
+        "PROBE-B03": 7,
+        "PROBE-B04": 8,
+        "PROBE-C02": 6,
+        "PROBE-C04": 6,
+        "PROBE-D05": 7,
+        "PROBE-E01": 8,
+        "PROBE-E02": 4,
+        "PROBE-E03": 7,
+        "PROBE-G03": 8
+      },
+      "mode_distribution": {
+        "hand_authored": 14,
+        "programmatic": 18,
+        "trace_derived": 37
+      }
+    },
+    "held_out": {
+      "count": 10,
+      "pct": 4.9,
+      "probe_distribution": {
+        "PROBE-A07": 1,
+        "PROBE-B03": 1,
+        "PROBE-B04": 1,
+        "PROBE-C02": 1,
+        "PROBE-C04": 1,
+        "PROBE-D05": 1,
+        "PROBE-E01": 1,
+        "PROBE-E02": 1,
+        "PROBE-E03": 1,
+        "PROBE-G03": 1
+      },
+      "mode_distribution": {
+        "hand_authored": 9,
+        "trace_derived": 1
+      }
+    }
+  },
+  "overall_probe_distribution": {
+    "PROBE-A07": 22,
+    "PROBE-B03": 19,
+    "PROBE-B04": 17,
+    "PROBE-C02": 19,
+    "PROBE-C04": 18,
+    "PROBE-D05": 19,
+    "PROBE-E01": 19,
+    "PROBE-E02": 18,
+    "PROBE-E03": 21,
+    "PROBE-G03": 31
+  },
+  "overall_mode_distribution": {
+    "hand_authored": 40,
+    "programmatic": 73,
+    "trace_derived": 90
+  },
+  "sources": {
+    "data/judge_pairs/trace_derived_pairs.jsonl": 90,
+    "data/judge_pairs/programmatic_pairs.jsonl": 73,
+    "data/judge_pairs/hand_authored_pairs.jsonl": 40
+  },
+  "held_out_probe_coverage": [
+    "PROBE-A07",
+    "PROBE-B03",
+    "PROBE-B04",
+    "PROBE-C02",
+    "PROBE-C04",
+    "PROBE-D05",
+    "PROBE-E01",
+    "PROBE-E02",
+    "PROBE-E03",
+    "PROBE-G03"
+  ],
+  "target_probes_all_covered": true
+}

@@ -1,0 +1,345 @@
+{
+  "source": "data/raw/trace_log.jsonl",
+  "total_simulations": 150,
+  "unique_tasks": 30,
+  "pass_at_1": 0.7267,
+  "clusters": {
+    "always_fail": [
+      "76",
+      "92",
+      "104"
+    ],
+    "high_fail": [
+      "11",
+      "34",
+      "72",
+      "83",
+      "106"
+    ],
+    "intermittent": [
+      "1",
+      "4",
+      "22",
+      "29",
+      "66",
+      "105",
+      "109"
+    ],
+    "always_pass": [
+      "2",
+      "7",
+      "15",
+      "24",
+      "25",
+      "43",
+      "47",
+      "48",
+      "50",
+      "52",
+      "73",
+      "85",
+      "87",
+      "95",
+      "113"
+    ]
+  },
+  "task_summary": {
+    "1": {
+      "task_id": "1",
+      "trials": 5,
+      "fail_rate": 0.2,
+      "failing_simulation_ids": [
+        "9ea053e4-7504-490b-9acf-d48383398745"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.020684
+    },
+    "2": {
+      "task_id": "2",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "4": {
+      "task_id": "4",
+      "trials": 5,
+      "fail_rate": 0.2,
+      "failing_simulation_ids": [
+        "3083caba-fb6a-4866-88f0-954be8d6a339"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.022919
+    },
+    "7": {
+      "task_id": "7",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "11": {
+      "task_id": "11",
+      "trials": 5,
+      "fail_rate": 0.6,
+      "failing_simulation_ids": [
+        "a553180f-80d2-4d4b-9a1e-d525b1219cfd",
+        "65ec4856-4ef0-4414-be4d-8122c6eb9638",
+        "497a4b85-4504-473c-a9a7-506bbe1256b8"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.013559
+    },
+    "15": {
+      "task_id": "15",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "22": {
+      "task_id": "22",
+      "trials": 5,
+      "fail_rate": 0.2,
+      "failing_simulation_ids": [
+        "ac397276-2c37-4026-94cc-39dc39ac52fa"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.026162
+    },
+    "24": {
+      "task_id": "24",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "25": {
+      "task_id": "25",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "29": {
+      "task_id": "29",
+      "trials": 5,
+      "fail_rate": 0.4,
+      "failing_simulation_ids": [
+        "92995764-0b20-48cd-8121-0b4641a7858b",
+        "ace8e82a-1686-44bc-b50e-e66cb0a874b3"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.036268
+    },
+    "34": {
+      "task_id": "34",
+      "trials": 5,
+      "fail_rate": 0.6,
+      "failing_simulation_ids": [
+        "89337dd1-bb36-41d7-8530-190df8734cc3",
+        "a197e508-661e-4eca-92b3-22792399820c",
+        "0e1879d3-7946-44f7-8509-0c881a3c43e2"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.012116
+    },
+    "43": {
+      "task_id": "43",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "47": {
+      "task_id": "47",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "48": {
+      "task_id": "48",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "50": {
+      "task_id": "50",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "52": {
+      "task_id": "52",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "66": {
+      "task_id": "66",
+      "trials": 5,
+      "fail_rate": 0.4,
+      "failing_simulation_ids": [
+        "ef2ad255-479a-4b67-a96f-2522026e3aaf",
+        "fb8dfbcb-26a5-49a0-9abb-03948dfced43"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.012456
+    },
+    "72": {
+      "task_id": "72",
+      "trials": 5,
+      "fail_rate": 0.8,
+      "failing_simulation_ids": [
+        "944d2d65-d659-44a5-ac0d-a5040eaaa5b3",
+        "7d10d94d-3f42-4c1e-ae51-7a40e10e67cf",
+        "7507b00f-c046-467f-a7cd-0cb78c2ad833",
+        "f6b21210-cb89-4a08-b327-f2663ed86be7"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.023179
+    },
+    "73": {
+      "task_id": "73",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "76": {
+      "task_id": "76",
+      "trials": 5,
+      "fail_rate": 1.0,
+      "failing_simulation_ids": [
+        "0857ba6e-d8cb-4ec8-b024-3d5ddc298fc6",
+        "d12524e5-0440-4bd3-af26-6a0b3388440d",
+        "53a797c9-a5e0-452c-93de-9c0b8344e334",
+        "3ea8c2c5-ddc4-41d4-b0e8-1ea9490f203c",
+        "88bb3cea-1599-471c-9609-27736556d1e0"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.033609
+    },
+    "83": {
+      "task_id": "83",
+      "trials": 5,
+      "fail_rate": 0.6,
+      "failing_simulation_ids": [
+        "df4f23d5-8977-4379-a9a6-a42ffd80d70e",
+        "c361ffd7-a8bc-4809-9dba-7ba04d01c806",
+        "c2b07345-6629-4a6c-a726-d66aa18813cb"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.009957
+    },
+    "85": {
+      "task_id": "85",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "87": {
+      "task_id": "87",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "92": {
+      "task_id": "92",
+      "trials": 5,
+      "fail_rate": 1.0,
+      "failing_simulation_ids": [
+        "19d13ac9-f495-4df4-b1c4-d042ca754933",
+        "293b3bbb-1698-4193-8d0d-2c39f382c4d9",
+        "d6dc6b13-af74-4331-b1fa-75ae72008736",
+        "09f0188f-8567-4e62-b62c-08cc164774e5",
+        "95c0e4d6-0900-46e4-ae74-4f92c80937f1"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.011732
+    },
+    "95": {
+      "task_id": "95",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    },
+    "104": {
+      "task_id": "104",
+      "trials": 5,
+      "fail_rate": 1.0,
+      "failing_simulation_ids": [
+        "0c380837-0cac-490f-a053-8cb13e79ed6b",
+        "8c0482dd-bdb1-4deb-82ad-342154c29473",
+        "7463faab-f29c-4617-8229-802300c83c30",
+        "4c4e20a2-9699-47a8-a248-ae7cf6cbbcdf",
+        "0086bb89-a8df-475f-aeb9-dd0fe239f2cd"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.037995
+    },
+    "105": {
+      "task_id": "105",
+      "trials": 5,
+      "fail_rate": 0.4,
+      "failing_simulation_ids": [
+        "f50f1801-5f55-4c3f-aff4-6d6421934360",
+        "879ee1fc-7a7f-438e-bb19-054fb43c8637"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.061277
+    },
+    "106": {
+      "task_id": "106",
+      "trials": 5,
+      "fail_rate": 0.6,
+      "failing_simulation_ids": [
+        "58d3c8bc-1870-44f1-ac7a-a331c5772a56",
+        "7073c4b4-cb85-4332-a9b5-4f2b8b6748d9",
+        "4fc962ec-74de-4259-a756-c4fc703c2980"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.018882
+    },
+    "109": {
+      "task_id": "109",
+      "trials": 5,
+      "fail_rate": 0.2,
+      "failing_simulation_ids": [
+        "3ad8bca9-be59-48ff-9725-1a26181b4289"
+      ],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.021222
+    },
+    "113": {
+      "task_id": "113",
+      "trials": 5,
+      "fail_rate": 0.0,
+      "failing_simulation_ids": [],
+      "probe_id": "UNMAPPED",
+      "avg_cost_failing": 0.0
+    }
+  },
+  "note": "This analysis identifies WHICH simulations failed. To build text preference pairs, retrieve full trace content from the simulation backend by simulation_id."
+}

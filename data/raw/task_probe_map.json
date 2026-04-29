@@ -1,0 +1,22 @@
+{
+  "_note": "Map τ²-Bench task_id → probe_id. Fill this in by reviewing what each task tests.",
+  "_always_fail_tasks": ["76", "92", "104"],
+  "_high_fail_tasks": ["11", "34", "72", "83", "106"],
+  "_intermittent_tasks": ["1", "4", "22", "29", "66", "105", "109"],
+
+  "76":  "PROBE-???",
+  "92":  "PROBE-???",
+  "104": "PROBE-???",
+  "11":  "PROBE-???",
+  "34":  "PROBE-???",
+  "72":  "PROBE-???",
+  "83":  "PROBE-???",
+  "106": "PROBE-???",
+  "1":   "PROBE-???",
+  "4":   "PROBE-???",
+  "22":  "PROBE-???",
+  "29":  "PROBE-???",
+  "66":  "PROBE-???",
+  "105": "PROBE-???",
+  "109": "PROBE-???"
+}

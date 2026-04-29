@@ -1,0 +1,7 @@
+date,phase,model,calls,tokens_in,tokens_out,cost_usd,notes
+2026-04-29,setup,n/a,0,0,0,0.00,Initial setup — no API calls
+2026-04-29,dataset-synthesis-mode1,n/a,0,0,0,0.00,Trace-derived pairs (90) — no API; hand-authored from trace patterns
+2026-04-29,dataset-synthesis-mode2,n/a,0,0,0,0.00,Programmatic pairs (73) — no API; parameter sweeps
+2026-04-29,dataset-synthesis-mode4,n/a,0,0,0,0.00,Hand-authored pairs (40) — no API; manually written
+2026-04-29,contamination-check,n/a,0,0,0,0.00,Contamination check (PASS) — no API
+2026-04-29,total-to-date,n/a,0,0,0,0.00,All 203 pairs generated without API; $0 spent

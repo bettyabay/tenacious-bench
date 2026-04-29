@@ -1,0 +1,13 @@
+venv/
+.env
+*.key
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Large model files — commit adapter_config.json but not weights
+training/judge_adapter/adapter_model.safetensors
+
+# Scratch
+*.tmp

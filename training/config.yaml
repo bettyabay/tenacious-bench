@@ -1,0 +1,44 @@
+# DPO Training Configuration — Path B Judge
+# Target hardware: Google Colab T4 (free tier, ~15 GB VRAM)
+# Base model: unsloth/llama-3-8b-bnb-4bit (4-bit quantised Llama-3 8B)
+
+model:
+  base_model: "unsloth/llama-3-8b-bnb-4bit"
+  max_seq_length: 2048
+  load_in_4bit: true             # required for T4 VRAM budget
+
+lora:
+  r: 16                          # LoRA rank
+  lora_alpha: 16                 # scaling = alpha / r = 1.0
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+
+training:
+  dpo_beta: 0.1                  # KL penalty weight (standard DPO)
+  epochs: 3
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 4  # effective batch = 2 × 4 = 8
+  learning_rate: 2.0e-4
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.1
+  fp16: true                     # float16 on T4 (bf16 NOT supported)
+  bf16: false
+  optim: "adamw_8bit"            # memory-efficient optimiser
+  seed: 42
+
+data:
+  train: "tenacious_bench_v0.1/train/pairs.jsonl"
+  eval:  "tenacious_bench_v0.1/dev/pairs.jsonl"
+
+output:
+  adapter_dir: "training/judge_adapter"
+  training_log: "training/training_run.log"
+  save_steps: 50
+  logging_steps: 10

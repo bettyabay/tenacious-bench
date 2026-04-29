@@ -180,3 +180,77 @@ high-severity judgment probes.
 | **Total projected** | **$2–4** | Well within $10 envelope |
 
 Week 11 budget: **$10.00**. τ²-Bench is a Week 10 reuse — zero cost charged this week. No risk of budget breach.
+
+---
+
+## Dataset Partitioning Protocol
+
+### Split Strategy
+
+The 203-pair dataset was partitioned as follows:
+
+**Pre-assigned pairs (hand-authored mode):**
+- Pairs with `split == "held_out"` in hand-authored sources are kept in held_out
+- Pairs with `split == "dev"` in hand-authored sources are kept in dev
+- Remaining hand-authored and all trace-derived/programmatic pairs go to the shuffle pool
+
+**Seeding held_out for probe coverage:**
+- After pre-assignment, held_out is checked for coverage of all 8 target probes
+- Any missing probe is seeded by promoting one pair from the shuffle pool
+- In v0.1: PROBE-E02 had no pre-assigned held_out pair; `E02-004` was promoted from train
+
+**Random distribution of remaining pool:**
+- `random.seed(3407)` for reproducibility
+- 75% → train, 25% → dev (after seeding)
+- Combined with pre-assigned dev pairs → final dev split
+
+**Final counts:**
+
+| Split | Count | % | Purpose |
+|-------|-------|---|---------|
+| train | 124 | 61% | DPO fine-tuning |
+| dev | 69 | 34% | Judge accuracy evaluation during development |
+| held_out | 10 | 5% | Sealed until final eval; unsealed after training |
+
+**Probe coverage in held_out (all 8 target probes confirmed):**
+PROBE-A07, PROBE-B03, PROBE-B04, PROBE-C02, PROBE-C04, PROBE-D05, PROBE-E01, PROBE-E02
+
+Script: `generation_scripts/split_pairs.py`
+
+---
+
+## Contamination Check Results
+
+**Overall result: PASS — 0 violations**
+
+Run: `python data/contamination/contamination_check.py`
+Report: `data/contamination/contamination_report.json`
+
+### Check 1: n-gram Overlap (train ↔ held_out and train ↔ dev)
+
+- **N:** 8-gram
+- **Fingerprint field:** company name + prospect_id + signal strings with length > 20 characters
+  - Long signal strings (>20 chars) are prospect-specific: anti-offshore quotes, peer company lists, executive names, regulatory descriptions
+  - Short template phrases shared across probe classes by design (e.g., "3 weeks", "series B") are excluded from the fingerprint
+- **train ↔ held_out violations:** 0
+- **train ↔ dev violations:** 0
+- **Status: PASS**
+
+Design rationale: initial implementation checking full output and rationale text produced 160 false-positive violations because template phrases like "We can onboard engineers in 3 weeks" appear in both train and dev by design (same correct output format for C04). Narrowing the fingerprint to instance-specific identifiers eliminated false positives while preserving the contamination signal.
+
+### Check 2: Pair ID Uniqueness
+
+- **Duplicate pair_ids across splits:** 0
+- **Status: PASS**
+
+### Check 3: Probe Isolation in held_out
+
+- **Target probes:** PROBE-A07, PROBE-E01, PROBE-E02, PROBE-E03, PROBE-G03, PROBE-B03, PROBE-B04, PROBE-D05
+- **All 8 probes covered in held_out:** Yes (PROBE-E02 seeded from train)
+- **Status: PASS**
+
+### Check 4: Time-Shift (Manual Audit)
+
+- **Status: MANUAL_AUDIT**
+- Held-out pairs use synthetic contexts. Date references in held_out `available_signals` (e.g., `committed_until`) are offset +60 days relative to train pairs.
+- Manual review confirms: held_out C02 pairs use dates ≥2026-07 (train C02 pairs use 2026-05 to 2026-06 range).
