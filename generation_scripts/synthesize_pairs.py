@@ -327,7 +327,7 @@ def judge_pair(client: OpenAI, pair: dict) -> float:
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def synthesize(probes: list[str], per_probe: int, out_path: Path):
+def synthesize(probes: list[str], per_probe: int, out_path: Path, threshold: float = JUDGE_PASS_THRESHOLD):
     client = get_client()
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -371,7 +371,7 @@ def synthesize(probes: list[str], per_probe: int, out_path: Path):
                     score = judge_pair(client, pair)
                     print(f"  [{model_short}] n={n} score={score:.2f}", end="")
 
-                    if score >= JUDGE_PASS_THRESHOLD:
+                    if score >= threshold:
                         pair["judge_label"]["kappa_contribution"] = round(score, 3)
                         f.write(json.dumps(pair) + "\n")
                         f.flush()
@@ -381,7 +381,7 @@ def synthesize(probes: list[str], per_probe: int, out_path: Path):
                         print(" -> ACCEPTED")
                     else:
                         rejected_total += 1
-                        print(f" -> REJECTED (score < {JUDGE_PASS_THRESHOLD})")
+                        print(f" -> REJECTED (score < {threshold})")
 
                     n += 1
 
@@ -415,14 +415,11 @@ def main():
     )
     args = parser.parse_args()
 
-    global JUDGE_PASS_THRESHOLD
-    JUDGE_PASS_THRESHOLD = args.threshold
-
     invalid = [p for p in args.probes if p not in ALL_PROBES]
     if invalid:
         parser.error(f"Unknown probe IDs: {invalid}. Valid: {ALL_PROBES}")
 
-    synthesize(args.probes, args.per_probe, Path(args.out))
+    synthesize(args.probes, args.per_probe, Path(args.out), threshold=args.threshold)
 
 
 if __name__ == "__main__":
