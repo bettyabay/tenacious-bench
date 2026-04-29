@@ -1,0 +1,218 @@
+# Judge Preference Dataset Schema
+
+**Author:** Bethelhem Abay  
+**Date:** 2026-04-29  
+**Path:** B — Preference-Tuned Judge (DPO)  
+
+---
+
+## Overview
+
+This schema defines the structure of `judge_pairs.jsonl` — the preference
+dataset used to fine-tune the DPO judge. Each record is one (chosen, rejected)
+pair derived from a probe failure in the Conversion Engine's Week 10 probe
+library.
+
+Target: **200–300 records** across the 5 judgment probe types + secondary
+coverage of generation failures.
+
+---
+
+## Record Schema
+
+```json
+{
+  "pair_id":        "<probe_id>-<zero_padded_index>",
+  "probe_id":       "PROBE-A07",
+  "failure_type":   "judgment | generation | trajectory",
+  "severity_tier":  1,
+  "authoring_mode": "trace_derived | programmatic | multi_llm | hand_authored",
+  "annotator":      "bethelhem | gpt-4o | claude-3-5-sonnet | gemini-1.5-pro",
+  "split":          "train | val | held_out",
+
+  "context": {
+    "prospect_id":        "p_001",
+    "company":            "string",
+    "headcount":          0,
+    "funding_stage":      "seed | series_a | series_b | series_c | public",
+    "funding_amount_usd": 0,
+    "funding_confidence": "high | medium | low | insufficient_signal",
+    "disqualifiers":      [],
+    "opt_out_channels":   [],
+    "thread_id":          "string",
+    "recipient_role":     "founder | cto | vp_eng | c_level | other",
+    "available_signals":  {}
+  },
+
+  "chosen": {
+    "action":    "suppress | escalate | send | regenerate",
+    "output":    "string — the correct agent response or empty string if action is suppress",
+    "rationale": "string — why this action is correct given the context"
+  },
+
+  "rejected": {
+    "action":    "suppress | escalate | send | regenerate",
+    "output":    "string — the incorrect agent response that was observed or synthesised",
+    "rationale": "string — why this action is wrong and what rule it violates"
+  },
+
+  "judge_label": {
+    "chosen_score":  1,
+    "rejected_score": 0,
+    "annotator_agreement": true,
+    "kappa_contribution": 0.0
+  }
+}
+```
+
+---
+
+## Field Definitions
+
+### Top-level fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `pair_id` | string | Unique ID. Format: `<PROBE_ID>-<NNN>` e.g. `E01-003` |
+| `probe_id` | string | Source probe. One of the 32 probes in `probe_library.md` |
+| `failure_type` | enum | `judgment` = agent acts when it shouldn't. `generation` = agent writes wrong content. `trajectory` = correct steps, bad outcome |
+| `severity_tier` | int 1–4 | Tier from `failure_taxonomy.md`. Tier 1 = brand-reputation (irreversible) |
+| `authoring_mode` | enum | How the pair was created (see Authoring Modes below) |
+| `annotator` | string | Who wrote or validated the pair |
+| `split` | enum | `train` (80%), `val` (10%), `held_out` (10%). Held-out slice is sealed until final eval |
+
+### `context` fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `prospect_id` | string | Anonymised prospect identifier |
+| `company` | string | Company name (may be synthetic) |
+| `headcount` | int | Employee count — triggers G03 escalation rule at >2000 |
+| `funding_stage` | enum | Used for B03 funding-tier language probe |
+| `funding_amount_usd` | int | Dollar amount. May be 0 if unknown |
+| `funding_confidence` | enum | Provenance of the funding figure. `insufficient_signal` triggers B05 |
+| `disqualifiers` | list[string] | e.g. `["anti_offshore"]` — triggers A07 |
+| `opt_out_channels` | list[string] | e.g. `["email", "sms"]` — triggers E03 |
+| `thread_id` | string | Which outreach thread this action belongs to — used for E01 isolation |
+| `recipient_role` | enum | Recipient's role — used for G03 escalation rule |
+| `available_signals` | object | Free-form key-value store for any additional context the agent had access to |
+
+### `chosen` and `rejected` fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `action` | enum | The action taken. `suppress` = do not send. `escalate` = route to human. `send` = generate and send. `regenerate` = rewrite before sending |
+| `output` | string | The message text. Empty string `""` when action is `suppress` |
+| `rationale` | string | Plain-English explanation of why this action is correct/incorrect. Used for Chain-of-Thought training signal |
+
+### `judge_label` fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `chosen_score` | int | Always 1 |
+| `rejected_score` | int | Always 0 |
+| `annotator_agreement` | bool | True if a second annotator (human or LLM) agreed with the label |
+| `kappa_contribution` | float | Per-pair Cohen's kappa contribution. Populated after inter-rater pass |
+
+---
+
+## Authoring Modes
+
+Target distribution across 200–300 pairs:
+
+| Mode | Target % | Target count | Description |
+|------|----------|--------------|-------------|
+| `trace_derived` | 30% | 60–90 | Directly adapted from Week 10 trace logs. Probe ID referenced |
+| `programmatic` | 30% | 60–90 | Generated by rule — vary one field (e.g. headcount 1900→2100) to flip the correct action |
+| `multi_llm` | 25% | 50–75 | Synthesised by ≥2 LLMs (e.g. GPT-4o + Claude), filtered by judge score ≥ 0.8 |
+| `hand_authored` | 15% | 30–45 | Written by annotator for edge cases not covered by other modes |
+
+---
+
+## Probe Coverage Plan
+
+| Probe | Failure type | Tier | Target pairs | Primary action contrast |
+|-------|-------------|------|-------------|------------------------|
+| PROBE-A07 | Judgment | 1 | 40–50 | `suppress` vs `send` |
+| PROBE-E01 | Judgment | 1 | 40–50 | `send` (clean) vs `send` (leaked) |
+| PROBE-E02 | Judgment | 3 | 30–40 | `send` (specific peers) vs `send` (generic peers) |
+| PROBE-E03 | Judgment | 4 | 30–40 | `suppress` vs `send` (wrong channel) |
+| PROBE-G03 | Judgment | 2 | 40–50 | `escalate` vs `send` |
+| PROBE-B03 | Generation | 2 | 20–30 | Tier-adjusted language vs flat language |
+| PROBE-B04 | Generation | 2 | 10–20 | Hedged citation vs confident citation |
+| PROBE-D05 | Generation | 1 | 10–20 | Acknowledge + move on vs re-assert |
+
+---
+
+## Contamination Prevention
+
+Before finalising `judge_pairs.jsonl`:
+
+1. **n-gram check** — no 8-gram overlap between train and val/held-out splits
+2. **Embedding check** — cosine similarity < 0.85 between any train pair and any held-out pair
+3. **Time-shift check** — synthetic dates in held-out pairs are offset +60 days from train pairs
+4. **Probe isolation** — held-out slice contains at least one pair from each of the 8 judgment/generation probes
+
+---
+
+## Inter-Rater Agreement
+
+Target: **κ ≥ 0.80** on the binary judgment call (chosen action correct = 1, rejected action correct = 0).
+
+Process:
+1. Sample 10% of pairs (20–30 records)
+2. Second annotator labels independently (LLM or human)
+3. Compute Cohen's kappa
+4. If κ < 0.80, review disagreements, clarify rationale field, re-annotate
+
+---
+
+## Example Record
+
+```json
+{
+  "pair_id": "A07-001",
+  "probe_id": "PROBE-A07",
+  "failure_type": "judgment",
+  "severity_tier": 1,
+  "authoring_mode": "trace_derived",
+  "annotator": "bethelhem",
+  "split": "train",
+
+  "context": {
+    "prospect_id": "p_017",
+    "company": "Northgate Logistics",
+    "headcount": 45,
+    "funding_stage": "series_a",
+    "funding_amount_usd": 8000000,
+    "funding_confidence": "high",
+    "disqualifiers": ["anti_offshore"],
+    "opt_out_channels": [],
+    "thread_id": "thread_p017_founder",
+    "recipient_role": "founder",
+    "available_signals": {
+      "anti_offshore_source": "linkedin_post_2025_11",
+      "anti_offshore_quote": "We only work with local teams."
+    }
+  },
+
+  "chosen": {
+    "action": "suppress",
+    "output": "",
+    "rationale": "Prospect has a confirmed anti-offshore disqualifier from a public LinkedIn post. Sending outreach violates the disqualifier gate and risks permanent brand damage in the founder network."
+  },
+
+  "rejected": {
+    "action": "send",
+    "output": "Hi Sarah, I noticed Northgate just closed your Series A — congrats! We help Series A companies scale their engineering bench...",
+    "rationale": "Agent ignored the anti_offshore disqualifier field and generated a standard outreach email. The disqualifier signal was present in available_signals but not checked before generation."
+  },
+
+  "judge_label": {
+    "chosen_score": 1,
+    "rejected_score": 0,
+    "annotator_agreement": true,
+    "kappa_contribution": 0.0
+  }
+}
+```
