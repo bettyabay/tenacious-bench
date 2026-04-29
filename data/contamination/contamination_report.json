@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "train_count": 124,
-  "dev_count": 69,
+  "train_count": 214,
+  "dev_count": 99,
   "held_out_count": 10,
   "checks": {
     "ngram_overlap": {

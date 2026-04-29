@@ -134,7 +134,7 @@ for split_name, pairs in splits.items():
     with open(out_file, "w", encoding="utf-8") as f:
         for pair in pairs:
             f.write(json.dumps(pair) + "\n")
-    print(f"  wrote {len(pairs)} pairs → {out_file}")
+    print(f"  wrote {len(pairs)} pairs -> {out_file}")
 
 # ── Summary stats ─────────────────────────────────────────────────────────────
 
@@ -177,5 +177,5 @@ stats_path = OUT_BASE / "dataset_stats.json"
 with open(stats_path, "w", encoding="utf-8") as f:
     json.dump(summary, f, indent=2)
 
-print(f"\nDataset stats → {stats_path}")
+print(f"\nDataset stats -> {stats_path}")
 print(json.dumps(summary, indent=2))

@@ -1,52 +1,54 @@
 {
   "version": "v0.1",
-  "total_pairs": 203,
+  "total_pairs": 323,
   "splits": {
     "train": {
-      "count": 124,
-      "pct": 61.1,
+      "count": 214,
+      "pct": 66.3,
       "probe_distribution": {
-        "PROBE-A07": 13,
-        "PROBE-B03": 11,
-        "PROBE-B04": 8,
-        "PROBE-C02": 12,
-        "PROBE-C04": 11,
-        "PROBE-D05": 11,
-        "PROBE-E01": 10,
-        "PROBE-E02": 13,
-        "PROBE-E03": 13,
-        "PROBE-G03": 22
+        "PROBE-A07": 22,
+        "PROBE-B03": 19,
+        "PROBE-B04": 16,
+        "PROBE-C02": 20,
+        "PROBE-C04": 19,
+        "PROBE-D05": 20,
+        "PROBE-E01": 20,
+        "PROBE-E02": 21,
+        "PROBE-E03": 25,
+        "PROBE-G03": 32
       },
       "mode_distribution": {
-        "hand_authored": 17,
-        "programmatic": 55,
-        "trace_derived": 52
+        "hand_authored": 16,
+        "multi_llm": 88,
+        "programmatic": 59,
+        "trace_derived": 51
       }
     },
     "dev": {
-      "count": 69,
-      "pct": 34.0,
+      "count": 99,
+      "pct": 30.7,
       "probe_distribution": {
-        "PROBE-A07": 8,
-        "PROBE-B03": 7,
-        "PROBE-B04": 8,
-        "PROBE-C02": 6,
-        "PROBE-C04": 6,
-        "PROBE-D05": 7,
-        "PROBE-E01": 8,
-        "PROBE-E02": 4,
+        "PROBE-A07": 11,
+        "PROBE-B03": 11,
+        "PROBE-B04": 12,
+        "PROBE-C02": 10,
+        "PROBE-C04": 10,
+        "PROBE-D05": 10,
+        "PROBE-E01": 10,
+        "PROBE-E02": 8,
         "PROBE-E03": 7,
-        "PROBE-G03": 8
+        "PROBE-G03": 10
       },
       "mode_distribution": {
-        "hand_authored": 14,
-        "programmatic": 18,
-        "trace_derived": 37
+        "hand_authored": 15,
+        "multi_llm": 31,
+        "programmatic": 14,
+        "trace_derived": 39
       }
     },
     "held_out": {
       "count": 10,
-      "pct": 4.9,
+      "pct": 3.1,
       "probe_distribution": {
         "PROBE-A07": 1,
         "PROBE-B03": 1,
@@ -61,31 +63,33 @@
       },
       "mode_distribution": {
         "hand_authored": 9,
-        "trace_derived": 1
+        "multi_llm": 1
       }
     }
   },
   "overall_probe_distribution": {
-    "PROBE-A07": 22,
-    "PROBE-B03": 19,
-    "PROBE-B04": 17,
-    "PROBE-C02": 19,
-    "PROBE-C04": 18,
-    "PROBE-D05": 19,
-    "PROBE-E01": 19,
-    "PROBE-E02": 18,
-    "PROBE-E03": 21,
-    "PROBE-G03": 31
+    "PROBE-A07": 34,
+    "PROBE-B03": 31,
+    "PROBE-B04": 29,
+    "PROBE-C02": 31,
+    "PROBE-C04": 30,
+    "PROBE-D05": 31,
+    "PROBE-E01": 31,
+    "PROBE-E02": 30,
+    "PROBE-E03": 33,
+    "PROBE-G03": 43
   },
   "overall_mode_distribution": {
     "hand_authored": 40,
+    "multi_llm": 120,
     "programmatic": 73,
     "trace_derived": 90
   },
   "sources": {
     "data/judge_pairs/trace_derived_pairs.jsonl": 90,
     "data/judge_pairs/programmatic_pairs.jsonl": 73,
-    "data/judge_pairs/hand_authored_pairs.jsonl": 40
+    "data/judge_pairs/hand_authored_pairs.jsonl": 40,
+    "data/judge_pairs/multi_llm_pairs.jsonl": 120
   },
   "held_out_probe_coverage": [
     "PROBE-A07",
