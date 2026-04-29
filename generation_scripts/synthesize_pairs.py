@@ -38,6 +38,13 @@ from typing import Optional
 
 from openai import OpenAI
 
+# Load .env from project root (pip install python-dotenv)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # fall back to environment variables already set in the shell
+
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"

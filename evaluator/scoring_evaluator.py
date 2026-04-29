@@ -13,6 +13,13 @@ import argparse
 import json
 import os
 import sys
+
+# Load .env from project root (pip install python-dotenv)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 from dataclasses import dataclass, asdict
 from typing import Literal
 
