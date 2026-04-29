@@ -225,8 +225,8 @@ def call_llm(
     temperature: float = 0.8,
     max_tokens: int = 1024,
     retries: int = 3,
-) -> Optional[str]:
-    """Call an LLM via OpenRouter. Returns the text content or None on failure."""
+) -> tuple[Optional[str], dict]:
+    """Call an LLM via OpenRouter. Returns (text, usage) where usage = {tokens_in, tokens_out}."""
     for attempt in range(retries):
         try:
             resp = client.chat.completions.create(
@@ -238,12 +238,16 @@ def call_llm(
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            return resp.choices[0].message.content.strip()
+            usage = {
+                "tokens_in":  getattr(resp.usage, "prompt_tokens", 0),
+                "tokens_out": getattr(resp.usage, "completion_tokens", 0),
+            }
+            return resp.choices[0].message.content.strip(), usage
         except Exception as e:
             print(f"  [warn] {model} attempt {attempt+1}/{retries} failed: {e}")
             if attempt < retries - 1:
                 time.sleep(2 ** attempt)
-    return None
+    return None, {"tokens_in": 0, "tokens_out": 0}
 
 
 def extract_json(text: str) -> Optional[dict]:
@@ -272,8 +276,8 @@ def generate_pair(
     model: str,
     probe_id: str,
     n: int,
-) -> Optional[dict]:
-    """Ask one model to generate one preference pair for the given probe."""
+) -> tuple[Optional[dict], dict]:
+    """Ask one model to generate one preference pair. Returns (pair, usage)."""
     model_short = model.split("/")[-1][:8].replace("-", "")
     description = PROBE_DESCRIPTIONS.get(probe_id, "No description available.")
     user_prompt = GENERATOR_USER.format(
@@ -281,14 +285,14 @@ def generate_pair(
         description=description,
         n=n,
     )
-    raw = call_llm(client, model, GENERATOR_SYSTEM, user_prompt,
-                   temperature=0.8, max_tokens=1200)
+    raw, usage = call_llm(client, model, GENERATOR_SYSTEM, user_prompt,
+                          temperature=0.8, max_tokens=1200)
     if not raw:
-        return None
+        return None, usage
     pair = extract_json(raw)
     if not pair:
         print(f"  [warn] Could not parse JSON from {model} for {probe_id} n={n}")
-        return None
+        return None, usage
     # Ensure correct metadata
     pair["pair_id"] = f"{probe_id}-MLLM-{model_short}-{n:03d}"
     pair["probe_id"] = probe_id
@@ -302,28 +306,83 @@ def generate_pair(
             "annotator_agreement": True,
             "kappa_contribution": 0.0,
         }
-    return pair
+    return pair, usage
 
 
-def judge_pair(client: OpenAI, pair: dict) -> float:
-    """Ask the judge model to score the pair quality. Returns 0.0–1.0."""
+def judge_pair(client: OpenAI, pair: dict) -> tuple[float, dict]:
+    """Ask the judge model to score the pair quality. Returns (score, usage)."""
     user_prompt = JUDGE_USER.format(
         probe_id=pair.get("probe_id", ""),
-        pair_json=json.dumps(pair, indent=2)[:2000],  # truncate for token budget
+        pair_json=json.dumps(pair, indent=2)[:2000],
     )
-    raw = call_llm(client, JUDGE_MODEL, JUDGE_SYSTEM, user_prompt,
-                   temperature=0.0, max_tokens=128)
+    raw, usage = call_llm(client, JUDGE_MODEL, JUDGE_SYSTEM, user_prompt,
+                          temperature=0.0, max_tokens=128)
     if not raw:
-        return 0.0
+        return 0.0, usage
     result = extract_json(raw)
     if not result:
-        return 0.0
+        return 0.0, usage
     try:
         score = float(result.get("score", 0.0))
-        reason = result.get("reason", "")
-        return max(0.0, min(1.0, score))
+        return max(0.0, min(1.0, score)), usage
     except (TypeError, ValueError):
-        return 0.0
+        return 0.0, usage
+
+# ── Cost logging ─────────────────────────────────────────────────────────────
+
+# Per-1K-token prices on OpenRouter (approximate, update if pricing changes)
+MODEL_PRICE_PER_1K = {
+    "deepseek/deepseek-chat":                  {"in": 0.00014, "out": 0.00028},
+    "meta-llama/llama-3.1-70b-instruct":       {"in": 0.00040, "out": 0.00040},
+    "openai/gpt-4o-mini":                      {"in": 0.00015, "out": 0.00060},
+}
+
+COST_LOG_PATH = Path("cost_log.csv")
+
+
+def _append_cost_log(
+    calls_by_model: dict,
+    tokens_in_by_model: dict,
+    tokens_out_by_model: dict,
+    accepted_pairs: int,
+) -> None:
+    import csv, datetime
+    today = datetime.date.today().isoformat()
+
+    rows = []
+    for model in set(list(calls_by_model) + list(tokens_in_by_model)):
+        tin  = tokens_in_by_model.get(model, 0)
+        tout = tokens_out_by_model.get(model, 0)
+        calls = calls_by_model.get(model, 0)
+        prices = MODEL_PRICE_PER_1K.get(model, {"in": 0.0, "out": 0.0})
+        cost = (tin / 1000) * prices["in"] + (tout / 1000) * prices["out"]
+        phase = "multi-llm-judge-filter" if model == JUDGE_MODEL else "multi-llm-synthesis"
+        rows.append({
+            "date": today,
+            "phase": phase,
+            "model": model,
+            "calls": calls,
+            "tokens_in": tin,
+            "tokens_out": tout,
+            "cost_usd": round(cost, 6),
+            "notes": f"{accepted_pairs} pairs accepted" if phase == "multi-llm-synthesis" else "judge filter",
+        })
+
+    write_header = not COST_LOG_PATH.exists()
+    with open(COST_LOG_PATH, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=[
+            "date", "phase", "model", "calls", "tokens_in", "tokens_out", "cost_usd", "notes"
+        ])
+        if write_header:
+            writer.writeheader()
+        writer.writerows(rows)
+
+    total_cost = sum(r["cost_usd"] for r in rows)
+    print(f"\n[cost] Logged to {COST_LOG_PATH}")
+    for r in rows:
+        print(f"  {r['model']}: {r['calls']} calls, {r['tokens_in']}+{r['tokens_out']} tokens = ${r['cost_usd']:.4f}")
+    print(f"  Total this run: ${total_cost:.4f}")
+
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
@@ -346,6 +405,12 @@ def synthesize(probes: list[str], per_probe: int, out_path: Path, threshold: flo
     generated_total = 0
     rejected_total = 0
 
+    # Per-model token + call counters for cost log
+    from collections import defaultdict
+    calls_by_model: dict[str, int] = defaultdict(int)
+    tokens_in_by_model: dict[str, int] = defaultdict(int)
+    tokens_out_by_model: dict[str, int] = defaultdict(int)
+
     with open(out_path, "a", encoding="utf-8") as f:
         for probe_id in probes:
             print(f"\n-- {probe_id} --")
@@ -354,12 +419,16 @@ def synthesize(probes: list[str], per_probe: int, out_path: Path, threshold: flo
                 accepted_for_model = 0
                 n = 1
                 attempts = 0
-                max_attempts = per_probe * 3  # allow up to 3× generations per target
+                max_attempts = per_probe * 3
 
                 while accepted_for_model < per_probe and attempts < max_attempts:
                     attempts += 1
                     generated_total += 1
-                    pair = generate_pair(client, model, probe_id, n)
+                    pair, gen_usage = generate_pair(client, model, probe_id, n)
+                    calls_by_model[model] += 1
+                    tokens_in_by_model[model]  += gen_usage["tokens_in"]
+                    tokens_out_by_model[model] += gen_usage["tokens_out"]
+
                     if not pair:
                         continue
 
@@ -368,7 +437,10 @@ def synthesize(probes: list[str], per_probe: int, out_path: Path, threshold: flo
                         n += 1
                         continue
 
-                    score = judge_pair(client, pair)
+                    score, judge_usage = judge_pair(client, pair)
+                    calls_by_model[JUDGE_MODEL] += 1
+                    tokens_in_by_model[JUDGE_MODEL]  += judge_usage["tokens_in"]
+                    tokens_out_by_model[JUDGE_MODEL] += judge_usage["tokens_out"]
                     print(f"  [{model_short}] n={n} score={score:.2f}", end="")
 
                     if score >= threshold:
@@ -393,6 +465,9 @@ def synthesize(probes: list[str], per_probe: int, out_path: Path, threshold: flo
     print(f"Rejected:  {rejected_total}")
     print(f"Pass rate: {accepted_total/max(generated_total,1)*100:.1f}%")
     print(f"Output:    {out_path}")
+
+    # ── Append to cost_log.csv ────────────────────────────────────────────────
+    _append_cost_log(calls_by_model, tokens_in_by_model, tokens_out_by_model, accepted_total)
 
 
 def main():
