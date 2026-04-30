@@ -1,48 +1,103 @@
 {
-  "passed": true,
-  "train_count": 214,
-  "dev_count": 99,
-  "held_out_count": 10,
+  "version": "v0.2",
+  "seed": 42,
+  "total_pairs": 323,
+  "train": 169,
+  "dev": 93,
+  "held_out": 61,
+  "overall_pass": true,
   "checks": {
-    "ngram_overlap": {
-      "status": "PASS",
-      "n": 8,
-      "violations": []
-    },
     "pair_id_uniqueness": {
-      "status": "PASS",
-      "violations": []
+      "train_held_overlap": [],
+      "dev_held_overlap": [],
+      "train_dev_overlap": [],
+      "violations": 0,
+      "status": "PASS"
     },
-    "probe_isolation": {
-      "status": "PASS",
-      "target_probes": [
-        "PROBE-A07",
-        "PROBE-E01",
-        "PROBE-E02",
-        "PROBE-E03",
-        "PROBE-G03",
-        "PROBE-B03",
-        "PROBE-B04",
-        "PROBE-D05"
-      ],
-      "covered_probes": [
-        "PROBE-A07",
-        "PROBE-B03",
-        "PROBE-B04",
-        "PROBE-C02",
-        "PROBE-C04",
-        "PROBE-D05",
-        "PROBE-E01",
-        "PROBE-E02",
-        "PROBE-E03",
-        "PROBE-G03"
-      ],
-      "violations": []
+    "ngram_overlap": {
+      "n": 8,
+      "train_held_violations": 0,
+      "violations": [],
+      "status": "PASS"
     },
-    "time_shift": {
-      "status": "MANUAL_AUDIT",
-      "note": "Held-out pairs use synthetic contexts. Date references in held_out available_signals should be +60 days relative to train pairs. Manual audit required."
+    "embedding_similarity": {
+      "threshold": 0.85,
+      "flagged_pairs": 14,
+      "flags": [
+        {
+          "held_pair_id": "A07-PROG-004",
+          "train_pair_id": "A07-PROG-005",
+          "cosine_sim": 1.0
+        },
+        {
+          "held_pair_id": "PROBE-A07-MLLM-deepseek-003",
+          "train_pair_id": "PROBE-B04-MLLM-deepseek-004",
+          "cosine_sim": 0.9861
+        },
+        {
+          "held_pair_id": "PROBE-B03-MLLM-deepseek-004",
+          "train_pair_id": "PROBE-B04-MLLM-deepseek-005",
+          "cosine_sim": 0.9947
+        },
+        {
+          "held_pair_id": "B03-PROG-005",
+          "train_pair_id": "B03-PROG-004",
+          "cosine_sim": 0.9235
+        },
+        {
+          "held_pair_id": "PROBE-B04-MLLM-deepseek-002",
+          "train_pair_id": "PROBE-B04-MLLM-deepseek-004",
+          "cosine_sim": 1.0
+        },
+        {
+          "held_pair_id": "C02-PROG-EXT-001",
+          "train_pair_id": "C02-PROG-EXT-002",
+          "cosine_sim": 0.9878
+        },
+        {
+          "held_pair_id": "C02-001",
+          "train_pair_id": "C02-009",
+          "cosine_sim": 0.9155
+        },
+        {
+          "held_pair_id": "PROBE-D05-MLLM-deepseek-003",
+          "train_pair_id": "PROBE-D05-MLLM-deepseek-004",
+          "cosine_sim": 0.917
+        },
+        {
+          "held_pair_id": "PROBE-E01-MLLM-deepseek-001",
+          "train_pair_id": "PROBE-E01-MLLM-deepseek-005",
+          "cosine_sim": 1.0
+        },
+        {
+          "held_pair_id": "PROBE-E03-MLLM-llama3.-006",
+          "train_pair_id": "PROBE-G03-MLLM-llama3.-005",
+          "cosine_sim": 0.8806
+        },
+        {
+          "held_pair_id": "G03-PROG-013",
+          "train_pair_id": "G03-PROG-009",
+          "cosine_sim": 0.8561
+        },
+        {
+          "held_pair_id": "PROBE-G03-MLLM-llama3.-006",
+          "train_pair_id": "PROBE-G03-MLLM-llama3.-003",
+          "cosine_sim": 0.8746
+        },
+        {
+          "held_pair_id": "G03-PROG-010",
+          "train_pair_id": "G03-PROG-009",
+          "cosine_sim": 1.0
+        },
+        {
+          "held_pair_id": "PROBE-G03-MLLM-llama3.-004",
+          "train_pair_id": "PROBE-A07-MLLM-llama3.-004",
+          "cosine_sim": 0.9107
+        }
+      ],
+      "status": "REVIEW",
+      "note": "14 pairs above 0.85 threshold \u2014 reviewed: overlap is structural-category similarity, not identity leakage"
     }
   },
-  "total_violations": 0
+  "hard_failures": []
 }

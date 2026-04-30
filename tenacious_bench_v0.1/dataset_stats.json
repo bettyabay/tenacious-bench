@@ -1,69 +1,88 @@
 {
-  "version": "v0.1",
+  "version": "v0.2",
   "total_pairs": 323,
+  "split_strategy": "stratified_per_probe_50_30_20",
+  "seed": 42,
   "splits": {
     "train": {
-      "count": 214,
-      "pct": 66.3,
+      "count": 169,
+      "pct": 52.3,
       "probe_distribution": {
-        "PROBE-A07": 22,
-        "PROBE-B03": 19,
+        "PROBE-A07": 18,
+        "PROBE-B03": 16,
         "PROBE-B04": 16,
-        "PROBE-C02": 20,
-        "PROBE-C04": 19,
-        "PROBE-D05": 20,
-        "PROBE-E01": 20,
-        "PROBE-E02": 21,
-        "PROBE-E03": 25,
-        "PROBE-G03": 32
+        "PROBE-C02": 16,
+        "PROBE-C04": 15,
+        "PROBE-D05": 16,
+        "PROBE-E01": 16,
+        "PROBE-E02": 15,
+        "PROBE-E03": 18,
+        "PROBE-G03": 23
       },
       "mode_distribution": {
-        "hand_authored": 16,
-        "multi_llm": 88,
-        "programmatic": 59,
+        "hand_authored": 20,
+        "multi_llm": 66,
+        "programmatic": 32,
         "trace_derived": 51
+      },
+      "difficulty_distribution": {
+        "easy": 31,
+        "hard": 49,
+        "medium": 89
       }
     },
     "dev": {
-      "count": 99,
-      "pct": 30.7,
+      "count": 93,
+      "pct": 28.8,
       "probe_distribution": {
-        "PROBE-A07": 11,
-        "PROBE-B03": 11,
-        "PROBE-B04": 12,
-        "PROBE-C02": 10,
-        "PROBE-C04": 10,
-        "PROBE-D05": 10,
-        "PROBE-E01": 10,
-        "PROBE-E02": 8,
-        "PROBE-E03": 7,
-        "PROBE-G03": 10
-      },
-      "mode_distribution": {
-        "hand_authored": 15,
-        "multi_llm": 31,
-        "programmatic": 14,
-        "trace_derived": 39
-      }
-    },
-    "held_out": {
-      "count": 10,
-      "pct": 3.1,
-      "probe_distribution": {
-        "PROBE-A07": 1,
-        "PROBE-B03": 1,
-        "PROBE-B04": 1,
-        "PROBE-C02": 1,
-        "PROBE-C04": 1,
-        "PROBE-D05": 1,
-        "PROBE-E01": 1,
-        "PROBE-E02": 1,
-        "PROBE-E03": 1,
-        "PROBE-G03": 1
+        "PROBE-A07": 10,
+        "PROBE-B03": 9,
+        "PROBE-B04": 8,
+        "PROBE-C02": 9,
+        "PROBE-C04": 9,
+        "PROBE-D05": 9,
+        "PROBE-E01": 9,
+        "PROBE-E02": 9,
+        "PROBE-E03": 9,
+        "PROBE-G03": 12
       },
       "mode_distribution": {
         "hand_authored": 9,
-        "multi_llm": 1
+        "multi_llm": 35,
+        "programmatic": 27,
+        "trace_derived": 22
+      },
+      "difficulty_distribution": {
+        "easy": 18,
+        "hard": 28,
+        "medium": 47
+      }
+    },
+    "held_out": {
+      "count": 61,
+      "pct": 18.9,
+      "probe_distribution": {
+        "PROBE-A07": 6,
+        "PROBE-B03": 6,
+        "PROBE-B04": 5,
+        "PROBE-C02": 6,
+        "PROBE-C04": 6,
+        "PROBE-D05": 6,
+        "PROBE-E01": 6,
+        "PROBE-E02": 6,
+        "PROBE-E03": 6,
+        "PROBE-G03": 8
+      },
+      "mode_distribution": {
+        "hand_authored": 11,
+        "multi_llm": 19,
+        "programmatic": 14,
+        "trace_derived": 17
+      },
+      "difficulty_distribution": {
+        "easy": 9,
+        "hard": 20,
+        "medium": 32
       }
     }
   },
@@ -85,69 +104,16 @@
     "programmatic": 73,
     "trace_derived": 90
   },
+  "difficulty_stratification": {
+    "easy": "A07-001, A07-002, A07-003, A07-004, A07-005, A07-006, A07-007, A07-008, A07-009, E03-001, E03-002, E03-003, E03-004, E03-005, E03-006, E03-007, E03-008, E03-009, E03-PROG-001, E03-PROG-002, E03-PROG-003, E03-PROG-004, E03-PROG-005, E03-PROG-006, E03-PROG-007, E03-PROG-008, A07-PROG-001, A07-PROG-002, A07-PROG-003, A07-PROG-004, A07-PROG-005, A07-PROG-006, A07-PROG-007, HAND-E03-002, PROBE-A07-MLLM-deepseek-001, PROBE-A07-MLLM-deepseek-002, PROBE-A07-MLLM-deepseek-003, PROBE-A07-MLLM-deepseek-004, PROBE-A07-MLLM-deepseek-005, PROBE-A07-MLLM-deepseek-006, PROBE-A07-MLLM-llama3.-001, PROBE-A07-MLLM-llama3.-002, PROBE-A07-MLLM-llama3.-003, PROBE-A07-MLLM-llama3.-004, PROBE-A07-MLLM-llama3.-005, PROBE-A07-MLLM-llama3.-006, PROBE-E03-MLLM-deepseek-001, PROBE-E03-MLLM-deepseek-002, PROBE-E03-MLLM-deepseek-003, PROBE-E03-MLLM-deepseek-004, PROBE-E03-MLLM-deepseek-005, PROBE-E03-MLLM-deepseek-006, PROBE-E03-MLLM-llama3.-001, PROBE-E03-MLLM-llama3.-002, PROBE-E03-MLLM-llama3.-003, PROBE-E03-MLLM-llama3.-004, PROBE-E03-MLLM-llama3.-005, PROBE-E03-MLLM-llama3.-006",
+    "medium": "G03-001, G03-002, G03-003, G03-004, G03-005, G03-006, G03-007, G03-008, G03-009, B03-001, B03-002, B03-003, B03-004, B03-005, B03-006, B03-007, B03-008, B03-009, B04-001, B04-002, B04-003, B04-004, B04-005, B04-006, B04-007, B04-008, B04-009, C02-001, C02-002, C02-003, C02-004, C02-005, C02-006, C02-007, C02-008, C02-009, C04-001, C04-002, C04-003, C04-004, C04-005, C04-006, C04-007, C04-008, C04-009, G03-PROG-001, G03-PROG-002, G03-PROG-003, G03-PROG-004, G03-PROG-005, G03-PROG-006, G03-PROG-007, G03-PROG-008, G03-PROG-009, G03-PROG-010, G03-PROG-013, G03-PROG-014, G03-PROG-015, G03-PROG-016, G03-PROG-017, B04-PROG-001, B04-PROG-002, B04-PROG-003, B04-PROG-004, B03-PROG-001, B03-PROG-002, B03-PROG-003, B03-PROG-004, B03-PROG-005, B03-PROG-006, B03-PROG-007, C02-PROG-EXT-001, C02-PROG-EXT-002, C02-PROG-EXT-003, C02-PROG-EXT-004, C02-PROG-EXT-005, C02-PROG-EXT-006, C04-PROG-EXT-001, C04-PROG-EXT-002, C04-PROG-EXT-003, C04-PROG-EXT-004, C04-PROG-EXT-005, C04-PROG-EXT-006, HAND-A07-001, HAND-A07-002, HAND-E03-001, HAND-G03-001, HAND-B03-001, HAND-B04-001, HAND-C02-001, HAND-C04-001, HAND-COMPOUND-002, HAND-G03-003, HAND-B04-002, HAND-C02-002, HAND-A07-004, HAND-G03-004, HAND-B03-002, HAND-B04-003, HAND-C02-003, HAND-C04-002, HAND-E03-003, HAND-G03-005, HAND-A07-005, HAND-B03-003, HAND-C02-004, HAND-B04-004, HAND-C04-003, PROBE-G03-MLLM-deepseek-001, PROBE-G03-MLLM-deepseek-002, PROBE-G03-MLLM-deepseek-003, PROBE-G03-MLLM-deepseek-004, PROBE-G03-MLLM-deepseek-005, PROBE-G03-MLLM-deepseek-006, PROBE-G03-MLLM-llama3.-001, PROBE-G03-MLLM-llama3.-002, PROBE-G03-MLLM-llama3.-003, PROBE-G03-MLLM-llama3.-004, PROBE-G03-MLLM-llama3.-005, PROBE-G03-MLLM-llama3.-006, PROBE-B03-MLLM-deepseek-001, PROBE-B03-MLLM-deepseek-002, PROBE-B03-MLLM-deepseek-003, PROBE-B03-MLLM-deepseek-004, PROBE-B03-MLLM-deepseek-005, PROBE-B03-MLLM-deepseek-006, PROBE-B03-MLLM-llama3.-001, PROBE-B03-MLLM-llama3.-002, PROBE-B03-MLLM-llama3.-003, PROBE-B03-MLLM-llama3.-004, PROBE-B03-MLLM-llama3.-005, PROBE-B03-MLLM-llama3.-006, PROBE-B04-MLLM-deepseek-001, PROBE-B04-MLLM-deepseek-002, PROBE-B04-MLLM-deepseek-003, PROBE-B04-MLLM-deepseek-004, PROBE-B04-MLLM-deepseek-005, PROBE-B04-MLLM-deepseek-006, PROBE-B04-MLLM-llama3.-001, PROBE-B04-MLLM-llama3.-002, PROBE-B04-MLLM-llama3.-003, PROBE-B04-MLLM-llama3.-004, PROBE-B04-MLLM-llama3.-005, PROBE-B04-MLLM-llama3.-006, PROBE-C02-MLLM-deepseek-001, PROBE-C02-MLLM-deepseek-002, PROBE-C02-MLLM-deepseek-003, PROBE-C02-MLLM-deepseek-004, PROBE-C02-MLLM-deepseek-005, PROBE-C02-MLLM-deepseek-006, PROBE-C02-MLLM-llama3.-001, PROBE-C02-MLLM-llama3.-002, PROBE-C02-MLLM-llama3.-003, PROBE-C02-MLLM-llama3.-004, PROBE-C02-MLLM-llama3.-005, PROBE-C02-MLLM-llama3.-006, PROBE-C04-MLLM-deepseek-001, PROBE-C04-MLLM-deepseek-002, PROBE-C04-MLLM-deepseek-003, PROBE-C04-MLLM-deepseek-004, PROBE-C04-MLLM-deepseek-005, PROBE-C04-MLLM-deepseek-006, PROBE-C04-MLLM-llama3.-001, PROBE-C04-MLLM-llama3.-002, PROBE-C04-MLLM-llama3.-003, PROBE-C04-MLLM-llama3.-004, PROBE-C04-MLLM-llama3.-005, PROBE-C04-MLLM-llama3.-006",
+    "hard": "E01-001, E01-002, E01-003, E01-004, E01-005, E01-006, E01-007, E01-008, E01-009, E02-001, E02-002, E02-003, E02-004, E02-005, E02-006, E02-007, E02-008, E02-009, D05-001, D05-002, D05-003, D05-004, D05-005, D05-006, D05-007, D05-008, D05-009, G03-PROG-011, G03-PROG-012, E01-PROG-EXT-001, E01-PROG-EXT-002, E01-PROG-EXT-003, E01-PROG-EXT-004, E01-PROG-EXT-005, E01-PROG-EXT-006, E02-PROG-EXT-001, E02-PROG-EXT-002, E02-PROG-EXT-003, E02-PROG-EXT-004, E02-PROG-EXT-005, E02-PROG-EXT-006, D05-PROG-EXT-001, D05-PROG-EXT-002, D05-PROG-EXT-003, D05-PROG-EXT-004, D05-PROG-EXT-005, D05-PROG-EXT-006, HAND-E01-001, HAND-E01-002, HAND-G03-002, HAND-D05-001, HAND-D05-002, HAND-COMPOUND-001, HAND-A07-003, HAND-E02-001, HAND-E01-003, HAND-D05-003, HAND-E02-002, HAND-D05-004, HAND-E01-004, HAND-E02-003, PROBE-E01-MLLM-deepseek-001, PROBE-E01-MLLM-deepseek-002, PROBE-E01-MLLM-deepseek-003, PROBE-E01-MLLM-deepseek-004, PROBE-E01-MLLM-deepseek-005, PROBE-E01-MLLM-deepseek-006, PROBE-E01-MLLM-llama3.-001, PROBE-E01-MLLM-llama3.-002, PROBE-E01-MLLM-llama3.-003, PROBE-E01-MLLM-llama3.-004, PROBE-E01-MLLM-llama3.-005, PROBE-E01-MLLM-llama3.-006, PROBE-E02-MLLM-deepseek-001, PROBE-E02-MLLM-deepseek-002, PROBE-E02-MLLM-deepseek-003, PROBE-E02-MLLM-deepseek-004, PROBE-E02-MLLM-deepseek-005, PROBE-E02-MLLM-deepseek-006, PROBE-E02-MLLM-llama3.-001, PROBE-E02-MLLM-llama3.-002, PROBE-E02-MLLM-llama3.-003, PROBE-E02-MLLM-llama3.-004, PROBE-E02-MLLM-llama3.-005, PROBE-E02-MLLM-llama3.-006, PROBE-D05-MLLM-deepseek-001, PROBE-D05-MLLM-deepseek-002, PROBE-D05-MLLM-deepseek-003, PROBE-D05-MLLM-deepseek-004, PROBE-D05-MLLM-deepseek-005, PROBE-D05-MLLM-deepseek-006, PROBE-D05-MLLM-llama3.-001, PROBE-D05-MLLM-llama3.-002, PROBE-D05-MLLM-llama3.-003, PROBE-D05-MLLM-llama3.-004, PROBE-D05-MLLM-llama3.-005, PROBE-D05-MLLM-llama3.-006"
+  },
+  "contamination_pass": true,
   "sources": {
     "data/judge_pairs/trace_derived_pairs.jsonl": 90,
     "data/judge_pairs/programmatic_pairs.jsonl": 73,
     "data/judge_pairs/hand_authored_pairs.jsonl": 40,
     "data/judge_pairs/multi_llm_pairs.jsonl": 120
-  },
-  "held_out_probe_coverage": [
-    "PROBE-A07",
-    "PROBE-B03",
-    "PROBE-B04",
-    "PROBE-C02",
-    "PROBE-C04",
-    "PROBE-D05",
-    "PROBE-E01",
-    "PROBE-E02",
-    "PROBE-E03",
-    "PROBE-G03"
-  ],
-  "target_probes_all_covered": true,
-  "difficulty_stratification": {
-    "easy": "E03-PROG-004, A07-PROG-003, PROBE-E03-MLLM-deepseek-005, A07-006, E03-PROG-006, PROBE-A07-MLLM-deepseek-006, A07-PROG-001, A07-PROG-006, PROBE-E03-MLLM-llama3.-006, PROBE-A07-MLLM-llama3.-002, PROBE-A07-MLLM-llama3.-003, E03-001, PROBE-A07-MLLM-deepseek-002, A07-PROG-002, E03-003, E03-PROG-008, E03-002, HAND-E03-002, E03-PROG-005, E03-006, PROBE-E03-MLLM-deepseek-006, PROBE-A07-MLLM-llama3.-001, PROBE-A07-MLLM-deepseek-005, PROBE-E03-MLLM-llama3.-005, PROBE-E03-MLLM-llama3.-003, PROBE-A07-MLLM-llama3.-005, E03-005, PROBE-E03-MLLM-llama3.-004, PROBE-A07-MLLM-deepseek-004, A07-PROG-005, PROBE-E03-MLLM-llama3.-001, A07-004, A07-PROG-007, PROBE-E03-MLLM-deepseek-002, A07-001, E03-004, E03-PROG-002, E03-PROG-007, A07-003, PROBE-A07-MLLM-llama3.-006, E03-PROG-001, E03-007, PROBE-E03-MLLM-deepseek-003, PROBE-A07-MLLM-deepseek-003, PROBE-A07-MLLM-llama3.-004, E03-PROG-003, PROBE-A07-MLLM-deepseek-001, A07-005, A07-002, A07-PROG-004, PROBE-E03-MLLM-llama3.-002, A07-007, PROBE-E03-MLLM-deepseek-004, PROBE-E03-MLLM-deepseek-001, A07-008, A07-009, E03-008, E03-009",
-    "medium": "PROBE-G03-MLLM-llama3.-001, PROBE-G03-MLLM-deepseek-003, G03-PROG-010, PROBE-C02-MLLM-deepseek-005, G03-PROG-013, PROBE-B03-MLLM-llama3.-001, C02-007, G03-PROG-009, B04-002, HAND-G03-003, G03-001, HAND-C02-002, PROBE-B04-MLLM-deepseek-004, C04-PROG-EXT-002, B04-PROG-004, PROBE-G03-MLLM-llama3.-005, C04-001, B03-001, PROBE-C04-MLLM-deepseek-001, B04-006, PROBE-B03-MLLM-llama3.-005, PROBE-G03-MLLM-llama3.-002, PROBE-B04-MLLM-llama3.-002, PROBE-C04-MLLM-llama3.-002, PROBE-B03-MLLM-llama3.-002, G03-002, HAND-C02-003, C04-004, PROBE-B04-MLLM-llama3.-003, C04-PROG-EXT-001, PROBE-G03-MLLM-deepseek-004, PROBE-B03-MLLM-llama3.-006, B04-PROG-002, G03-PROG-008, G03-PROG-007, HAND-B03-002, PROBE-C02-MLLM-deepseek-002, C02-001, PROBE-B03-MLLM-deepseek-006, PROBE-C04-MLLM-deepseek-003, PROBE-G03-MLLM-deepseek-001, PROBE-G03-MLLM-llama3.-006, C02-PROG-EXT-003, C02-PROG-EXT-005, C04-007, C04-002, PROBE-B03-MLLM-llama3.-004, B04-PROG-001, C04-003, B03-PROG-006, PROBE-C02-MLLM-llama3.-006, G03-PROG-002, B04-004, PROBE-B03-MLLM-deepseek-002, PROBE-B04-MLLM-deepseek-006, C04-005, PROBE-B04-MLLM-llama3.-001, B03-PROG-001, C02-003, PROBE-B04-MLLM-llama3.-006, PROBE-C04-MLLM-llama3.-006, PROBE-C04-MLLM-llama3.-003, HAND-C04-002, C02-004, G03-004, C02-PROG-EXT-001, B03-004, HAND-A07-004, PROBE-G03-MLLM-deepseek-005, G03-006, C02-006, PROBE-G03-MLLM-llama3.-004, PROBE-C02-MLLM-llama3.-004, PROBE-B03-MLLM-deepseek-005, PROBE-C02-MLLM-deepseek-006, B04-003, PROBE-B03-MLLM-deepseek-004, B04-005, PROBE-C04-MLLM-llama3.-004, G03-PROG-016, C04-PROG-EXT-005, C02-PROG-EXT-006, PROBE-C02-MLLM-deepseek-004, G03-PROG-001, G03-PROG-004, C04-PROG-EXT-004, PROBE-B04-MLLM-deepseek-001, PROBE-C02-MLLM-llama3.-002, PROBE-C04-MLLM-llama3.-005, G03-PROG-014, B03-PROG-004, B03-PROG-002, B03-PROG-005, PROBE-C04-MLLM-deepseek-002, G03-PROG-015, HAND-COMPOUND-002, HAND-A07-002, G03-PROG-003, B03-006, G03-PROG-017, PROBE-G03-MLLM-llama3.-003, B03-PROG-007, PROBE-C02-MLLM-deepseek-001, HAND-B04-003, G03-005, C02-002, PROBE-C02-MLLM-deepseek-003, PROBE-C02-MLLM-llama3.-005, HAND-G03-005, B04-007, PROBE-C02-MLLM-llama3.-001, PROBE-G03-MLLM-deepseek-002, G03-003, PROBE-C04-MLLM-deepseek-006, PROBE-B03-MLLM-llama3.-003, B03-PROG-003, B03-002, PROBE-B04-MLLM-llama3.-004, HAND-G03-004, PROBE-B04-MLLM-deepseek-002, HAND-E03-003, C02-PROG-EXT-004, C04-006, PROBE-B04-MLLM-llama3.-005, PROBE-C02-MLLM-llama3.-003, G03-PROG-005, C04-PROG-EXT-006, B04-PROG-003, B04-001, PROBE-C04-MLLM-deepseek-004, C02-PROG-EXT-002, PROBE-B03-MLLM-deepseek-003, B03-007, PROBE-C04-MLLM-deepseek-005, PROBE-B04-MLLM-deepseek-005, C04-PROG-EXT-003, HAND-B04-002, G03-PROG-006, C02-005, PROBE-B03-MLLM-deepseek-001, PROBE-B04-MLLM-deepseek-003, PROBE-C04-MLLM-llama3.-001, B03-005, G03-007, B03-003, PROBE-G03-MLLM-deepseek-006, G03-008, G03-009, B03-008, B03-009, B04-008, B04-009, C02-008, C02-009, C04-008, C04-009, HAND-A07-005, HAND-B03-003, HAND-C02-004, HAND-B04-004, HAND-C04-003, HAND-A07-001, HAND-E03-001, HAND-G03-001, HAND-B03-001, HAND-B04-001, HAND-C02-001, HAND-C04-001",
-    "hard": "E01-002, PROBE-E02-MLLM-deepseek-006, D05-005, E02-PROG-EXT-003, PROBE-D05-MLLM-deepseek-004, D05-003, PROBE-E02-MLLM-deepseek-002, PROBE-E01-MLLM-deepseek-003, PROBE-E02-MLLM-deepseek-001, PROBE-E02-MLLM-deepseek-004, E02-006, E02-007, HAND-E01-002, E01-PROG-EXT-004, PROBE-E01-MLLM-llama3.-005, E01-003, E01-PROG-EXT-001, E02-PROG-EXT-001, PROBE-D05-MLLM-llama3.-006, PROBE-E01-MLLM-llama3.-002, PROBE-D05-MLLM-llama3.-001, HAND-D05-002, E02-002, HAND-A07-003, D05-PROG-EXT-006, D05-007, D05-PROG-EXT-005, PROBE-E01-MLLM-llama3.-003, PROBE-D05-MLLM-deepseek-003, E01-007, E02-001, E01-PROG-EXT-006, PROBE-E02-MLLM-llama3.-005, E02-PROG-EXT-002, HAND-G03-002, D05-004, PROBE-D05-MLLM-deepseek-001, HAND-E02-002, PROBE-E01-MLLM-deepseek-001, G03-PROG-012, PROBE-E01-MLLM-llama3.-006, PROBE-D05-MLLM-deepseek-005, PROBE-E01-MLLM-deepseek-006, PROBE-E01-MLLM-deepseek-002, PROBE-E02-MLLM-deepseek-005, PROBE-E01-MLLM-deepseek-004, PROBE-D05-MLLM-deepseek-002, E01-001, D05-PROG-EXT-002, PROBE-E02-MLLM-llama3.-006, PROBE-E01-MLLM-llama3.-004, PROBE-E02-MLLM-llama3.-002, D05-006, PROBE-D05-MLLM-deepseek-006, E01-006, D05-PROG-EXT-003, PROBE-E02-MLLM-deepseek-003, E01-PROG-EXT-005, E02-003, D05-PROG-EXT-001, PROBE-D05-MLLM-llama3.-005, E02-PROG-EXT-006, E02-PROG-EXT-004, G03-PROG-011, HAND-E02-001, E01-004, PROBE-D05-MLLM-llama3.-004, E01-PROG-EXT-002, PROBE-E01-MLLM-llama3.-001, E01-PROG-EXT-003, HAND-D05-003, PROBE-E02-MLLM-llama3.-001, D05-PROG-EXT-004, HAND-E01-003, PROBE-D05-MLLM-llama3.-002, PROBE-E01-MLLM-deepseek-005, E01-005, E02-004, D05-002, D05-001, E02-PROG-EXT-005, PROBE-E02-MLLM-llama3.-004, E02-005, HAND-COMPOUND-001, PROBE-D05-MLLM-llama3.-003, E01-008, E01-009, E02-008, E02-009, D05-008, D05-009, HAND-D05-004, HAND-E01-004, HAND-E02-003, HAND-E01-001, HAND-D05-001, PROBE-E02-MLLM-llama3.-003"
-  },
-  "difficulty_counts": {
-    "easy": 58,
-    "medium": 168,
-    "hard": 97
-  },
-  "difficulty_per_probe": {
-    "PROBE-G03": {
-      "medium": 40,
-      "hard": 3
-    },
-    "PROBE-E01": {
-      "hard": 31
-    },
-    "PROBE-C02": {
-      "medium": 31
-    },
-    "PROBE-E02": {
-      "hard": 30
-    },
-    "PROBE-E03": {
-      "easy": 30,
-      "medium": 3
-    },
-    "PROBE-B03": {
-      "medium": 31
-    },
-    "PROBE-A07": {
-      "easy": 28,
-      "hard": 2,
-      "medium": 4
-    },
-    "PROBE-B04": {
-      "medium": 29
-    },
-    "PROBE-D05": {
-      "hard": 31
-    },
-    "PROBE-C04": {
-      "medium": 30
-    }
   }
 }
