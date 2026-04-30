@@ -29,6 +29,7 @@ coverage of generation failures.
   "authoring_mode": "trace_derived | programmatic | multi_llm | hand_authored",
   "annotator":      "bethelhem | gpt-4o | claude-3-5-sonnet | gemini-1.5-pro",
   "split":          "train | val | held_out",
+  "difficulty":     "easy | medium | hard",
 
   "context": {
     "prospect_id":        "p_001",
@@ -80,6 +81,23 @@ coverage of generation failures.
 | `authoring_mode` | enum | How the pair was created (see Authoring Modes below) |
 | `annotator` | string | Who wrote or validated the pair |
 | `split` | enum | `train` (80%), `val` (10%), `held_out` (10%). Held-out slice is sealed until final eval |
+| `difficulty` | enum | Difficulty level of this pair. `easy` = single rule, explicit signal. `medium` = boundary condition or two-condition rule. `hard` = subtle judgment, compound rules, adversarial edge case. See difficulty table below. |
+
+### Difficulty Stratification
+
+| Level | Definition | Example probes | Count (v0.1) |
+|-------|-----------|---------------|-------------|
+| `easy` | Single rule fires, signal is an explicit field value, answer is deterministic | PROBE-A07 (disqualifier flag), PROBE-E03 (opt-out channel) | 58 (18%) |
+| `medium` | Boundary condition, OR two conditions must both be true, OR moderate signal reading required | PROBE-G03 (headcount > 2000 AND c_level), PROBE-B04 (confidence level), PROBE-C04 (industry type) | 168 (52%) |
+| `hard` | Subtle signal detection, compound rules (2+ firing), adversarial edge cases, or subjective threshold | PROBE-E01 (subtle thread leak), PROBE-D05 (soft rejection), PROBE-E02 (peer specificity), hand_authored compound pairs | 97 (30%) |
+
+Assignment logic (in priority order):
+1. Probe-based base difficulty (see table above)
+2. `hand_authored` + compound context (2+ rules potentially firing) → override to `hard`
+3. `hand_authored` + single rule on easy probe → bump to `medium`
+4. `PROBE-G03` with `headcount == 2000` (exact boundary) → `hard`
+
+Script: `generation_scripts/add_difficulty.py`
 
 ### `context` fields
 
@@ -178,6 +196,7 @@ Process:
   "authoring_mode": "trace_derived",
   "annotator": "bethelhem",
   "split": "train",
+  "difficulty": "easy",
 
   "context": {
     "prospect_id": "p_017",

@@ -5,7 +5,7 @@
   "type": "object",
   "required": [
     "pair_id", "probe_id", "failure_type", "severity_tier",
-    "authoring_mode", "annotator", "split",
+    "authoring_mode", "annotator", "split", "difficulty",
     "context", "chosen", "rejected", "judge_label"
   ],
   "properties": {
@@ -42,6 +42,11 @@
     "split": {
       "type": "string",
       "enum": ["train", "dev", "held_out"]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"],
+      "description": "Difficulty level of this preference pair. easy = single rule, explicit signal. medium = boundary condition or two-condition rule. hard = subtle judgment, compound rules, or adversarial edge case."
     },
     "context": {
       "type": "object",
