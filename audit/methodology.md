@@ -122,20 +122,50 @@ where:
 - **chosen** = correct agent decision (abort outreach / maintain thread separation / escalate to human)
 - **rejected** = the observed failure behavior (send anyway / leak context / continue thread)
 
-The judge is trained on these pairs and learns a scoring function. At inference
-time, every agent output is scored before dispatch. Outputs below a threshold
-are blocked and the agent is prompted to regenerate with an explanation.
+The argument is grounded in Week 10 trace evidence, not abstraction. Three
+tasks in the τ²-Bench run failed **all 5 trials** — the strongest possible
+signal of a deterministic bug rather than sampling noise:
+
+- **task_76** (PROBE-A07 / disqualifier gate): simulations `0857ba6e`,
+  `d12524e5`, `53a797c9`, `3ea8c2c5`, `88bb3cea` — all reward 0.0.
+  The agent read the `anti_offshore` disqualifier field in every trial and
+  still produced outreach. This is a missing gate, not a generation deficiency.
+- **task_92** (PROBE-G03 / escalation): simulations `19d13ac9`, `293b3bbb`,
+  `d6dc6b13`, `09f0188f`, `95c0e4d6` — all reward 0.0. The agent had
+  `recipient_role: c_level` and `headcount: 3000` in context; the escalation
+  rule was never invoked.
+- **task_104** (PROBE-E01 / thread leakage): simulations `0c380837`,
+  `8c0482dd`, `7463faab`, `4c4e20a2`, `0086bb89` — all reward 0.0.
+  Co-founder context was consistently visible in the VP Eng reply across all
+  five independent trials.
+
+Additionally, task_34 (PROBE-B04 / low-confidence funding) failed 3/5 trials
+(`sim:89337dd1`, `sim:a197e508`, `sim:0e1879d3`), and task_66 (PROBE-E03 /
+opt-out channel routing) failed in `sim:ef2ad255`.
+
+The consistent all-trials failure pattern for tasks 76, 92, and 104 specifically
+supports Path B over Path A: a generator trained with SFT on correct examples
+would still write good emails — it would not suppress output when the context
+flags require suppression. The failure mode is not "bad writing"; it is "writing
+when the system should have stopped." Only a judgment-layer intervention (DPO
+judge) can install that hard stop.
+
+The judge is trained on (chosen, rejected) pairs and learns a scoring function.
+At inference time, every agent output is scored before dispatch. Outputs below a
+threshold are blocked and the agent is prompted to regenerate with an explanation.
 
 This architecture also provides a partial safety net for generation failures:
 even if the generator produces a funding-tier mismatch (B03) or an unsolicited
 doubling-down response (D05), the judge can catch and reject the output before
 it reaches the prospect.
 
-Per the LLM-as-a-Judge survey (Gu et al., 2024), preference-tuned judges
-perform best on binary classification tasks with clear positive/negative
-examples — exactly the structure of my judgment failure probes. Per LIMA (Zhou
-et al., 2023), 200–300 high-quality preference pairs are sufficient to
-meaningfully shift a small model's judgment behavior.
+Per the LLM-as-a-Judge survey (Gu et al., 2024, §3.2), preference-tuned judges
+outperform zero-shot judges on binary classification tasks with clear
+positive/negative examples — exactly the structure of my five judgment probes.
+Per LIMA (Zhou et al., 2023), 200–300 high-quality preference pairs are
+sufficient to meaningfully shift a small model's judgment behavior. The
+200–300 pair target maps directly onto our trace-confirmed failure modes; we are
+not extrapolating to an abstract capability.
 
 ### Why not Path A
 
@@ -154,6 +184,28 @@ My trajectory failures (H01, H02) are only 2 probes and are also partially
 explained by a missing feature (no timezone validation logic). Investing in PRM
 infrastructure for 2 probes is poor ROI compared to Path B's coverage of 5
 high-severity judgment probes.
+
+---
+
+## Training Method Update — ORPO over DPO
+
+Based on mentor review (Abdulhamid), the training method has been updated from standard
+DPO to **ORPO (Odds-Ratio Preference Optimisation)** (Hong et al., 2024).
+
+**Justification:**
+
+| Factor | Why ORPO fits this project |
+|--------|---------------------------|
+| Small dataset (323 pairs) | ORPO is more stable with limited data; combines SFT + preference loss in one pass, preventing the mode collapse DPO can exhibit when chosen/rejected outputs are similar |
+| Binary classification task | ORPO's odds-ratio loss is well-suited to hard send/block decisions; no soft KL penalty tuning required |
+| No reference model | Removes one hyperparameter (beta) and saves ~3–4 GB VRAM on T4; critical for free Colab tier |
+| Judge output is 0/1 | ORPO optimises log-odds of correct decision directly — matches the binary judgment structure |
+
+**Implementation change:** `training/train_judge.py` now uses `ORPOTrainer` from TRL.
+`training/config.yaml` replaces `dpo_beta: 0.1` with `orpo_lambda: 0.1`.
+
+**Reference:** Hong et al., 2024 — "ORPO: Monolithic Preference Optimization without
+Reference Model". See `synthesis_memos/meng_2024.md`.
 
 ---
 
@@ -238,12 +290,28 @@ Report: `data/contamination/contamination_report.json`
 
 Design rationale: initial implementation checking full output and rationale text produced 160 false-positive violations because template phrases like "We can onboard engineers in 3 weeks" appear in both train and dev by design (same correct output format for C04). Narrowing the fingerprint to instance-specific identifiers eliminated false positives while preserving the contamination signal.
 
-### Check 2: Pair ID Uniqueness
+### Check 2: Embedding Similarity (train ↔ held_out)
+
+- **Method:** `sentence-transformers/all-MiniLM-L6-v2` used to embed the
+  concatenated `[company] [prospect_id] [signal_strings]` context fingerprint
+  for each pair. Cosine similarity computed for all train × held_out pairs.
+- **Threshold:** similarity > 0.85 flagged as potential leakage
+- **Flagged pairs:** 3 pairs exceeded 0.85 cosine similarity (all were
+  programmatic C04 pairs sharing the same industry-type string
+  "healthcare_regulated_soc2" across train and held_out)
+- **Resolution:** The three flagged pairs were reviewed manually. The overlap
+  was in the industry-type label (a fixed categorical value, not an
+  instance-specific identifier). The prospect IDs, company names, and
+  executive names were distinct. All three pairs retained; the similarity
+  was structural-category overlap, not identity leakage.
+- **Status: PASS (with review)**
+
+### Check 3: Pair ID Uniqueness
 
 - **Duplicate pair_ids across splits:** 0
 - **Status: PASS**
 
-### Check 3: Probe Isolation in held_out
+### Check 4: Probe Isolation in held_out
 
 - **Target probes:** PROBE-A07, PROBE-E01, PROBE-E02, PROBE-E03, PROBE-G03, PROBE-B03, PROBE-B04, PROBE-D05
 - **All 8 probes covered in held_out:** Yes (PROBE-E02 seeded from train)

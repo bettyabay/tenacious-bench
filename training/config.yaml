@@ -1,6 +1,13 @@
-# DPO Training Configuration — Path B Judge
+# ORPO Training Configuration — Path B Judge
+# Method: ORPO (Odds-Ratio Preference Optimisation) — Hong et al., 2024
 # Target hardware: Google Colab T4 (free tier, ~15 GB VRAM)
 # Base model: unsloth/llama-3-8b-bnb-4bit (4-bit quantised Llama-3 8B)
+#
+# Why ORPO instead of DPO:
+#   - No reference model needed → saves ~3-4 GB VRAM (critical on T4)
+#   - Combines SFT + preference loss in one pass → more stable on small datasets
+#   - lambda_ replaces DPO's beta; simpler to tune for binary classification
+#   - Outperforms DPO on preference datasets < 500 pairs (Hong et al., 2024)
 
 model:
   base_model: "unsloth/llama-3-8b-bnb-4bit"
@@ -21,17 +28,19 @@ lora:
     - down_proj
 
 training:
-  dpo_beta: 0.1                  # KL penalty weight (standard DPO)
+  # ORPO uses lambda_ (odds-ratio weight) instead of DPO's beta (KL penalty)
+  # Default from Hong et al. 2024: lambda_ = 0.1
+  orpo_lambda: 0.1               # odds-ratio loss weight (replaces dpo_beta)
   epochs: 3
   per_device_train_batch_size: 2
   gradient_accumulation_steps: 4  # effective batch = 2 × 4 = 8
   learning_rate: 2.0e-4
   lr_scheduler_type: "cosine"
   warmup_ratio: 0.1
-  fp16: true                     # float16 on T4 (bf16 NOT supported)
+  fp16: true                     # float16 on T4 (bf16 NOT supported on T4)
   bf16: false
   optim: "adamw_8bit"            # memory-efficient optimiser
-  seed: 42
+  seed: 3407                     # matches split_pairs.py seed for reproducibility
 
 data:
   train: "tenacious_bench_v0.1/train/pairs.jsonl"
