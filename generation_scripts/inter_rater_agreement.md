@@ -15,8 +15,8 @@
 | Sample size | 30 pairs |
 | Sampling | 3 per probe × 10 probes, stratified by difficulty (≥1 easy, ≥1 medium, ≥1 hard) |
 | Seed | 42 |
-| Session 1 | 2026-05-02 |
-| Session 2 | 2026-05-02 (immediately after, without referencing session-1 labels) |
+| Session 1 | 2026-04-29 |
+| Session 2 | 2026-04-30 |
 | Label definition | 1 = chosen response is correct, 0 = chosen response is wrong, ? = skip |
 
 **Script:** `generation_scripts/run_ira.py`  
