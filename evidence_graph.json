@@ -1,0 +1,205 @@
+{
+  "meta": {
+    "description": "Maps every numeric claim in publication/memo.md and publication/blog_post.md to its primary source file and field path.",
+    "author": "Bethelhem Abay",
+    "date": "2026-05-02",
+    "version": "v0.1"
+  },
+  "claims": [
+    {
+      "claim_id": "C01",
+      "claim_text": "72.67% pass_at_1 on τ²-Bench",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md", "README.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "baseline.value",
+      "source_value": 0.7267,
+      "ci_95": [0.6504, 0.7917],
+      "notes": "Week 10 τ²-Bench result; 30 probes × 5 trials = 150 evaluations. Reused per challenge rules."
+    },
+    {
+      "claim_id": "C02",
+      "claim_text": "323 preference pairs",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md", "README.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "meta (training_run.train_pairs + eval_pairs + held_out_pairs)",
+      "source_value": 323,
+      "computation": "169 train + 93 dev + 61 held_out = 323",
+      "notes": "Verified by counting lines in tenacious_bench_v0.1/{train,dev,held_out}/pairs.jsonl"
+    },
+    {
+      "claim_id": "C03",
+      "claim_text": "95.7% loss reduction",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.loss_reduction_pct",
+      "source_value": 95.7,
+      "computation": "(3.25 - 0.1411) / 3.25 * 100 = 95.657%",
+      "notes": "From start_loss=3.25 to final_train_loss=0.1411"
+    },
+    {
+      "claim_id": "C04",
+      "claim_text": "100% preference accuracy",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.rewards_accuracy",
+      "source_value": 1.0,
+      "notes": "Reached at step 40, held through step 200"
+    },
+    {
+      "claim_id": "C05",
+      "claim_text": "85.2% held-out accuracy (52/61)",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md", "README.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "statistics.C_orpo_judge.accuracy",
+      "source_value": 0.8525,
+      "raw_counts": "52 correct / 61 total",
+      "ci_95": [0.7705, 0.9344],
+      "notes": "Computed from C_orpo_judge.labels in ablation_results.json; confirmed by held_out_traces.jsonl"
+    },
+    {
+      "claim_id": "C06",
+      "claim_text": "95% CI [0.77, 0.93] for held-out accuracy",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md", "README.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "statistics.C_orpo_judge.ci_95",
+      "source_value": [0.7705, 0.9344],
+      "notes": "Rounded to [0.77, 0.93] in publications. Clopper-Pearson exact binomial CI."
+    },
+    {
+      "claim_id": "C07",
+      "claim_text": "0% accuracy for no-judge baseline",
+      "appears_in": ["publication/blog_post.md", "publication/memo.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "statistics.A_no_judge.accuracy",
+      "source_value": 0.0,
+      "notes": "Baseline always passes rejected outputs; by construction accuracy = 0/61 = 0%"
+    },
+    {
+      "claim_id": "C08",
+      "claim_text": "Start loss 3.25",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.start_loss",
+      "source_value": 3.25
+    },
+    {
+      "claim_id": "C09",
+      "claim_text": "Final train loss 0.1411",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.final_train_loss",
+      "source_value": 0.1411
+    },
+    {
+      "claim_id": "C10",
+      "claim_text": "Final eval loss 0.3851",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.final_eval_loss",
+      "source_value": 0.3851
+    },
+    {
+      "claim_id": "C11",
+      "claim_text": "Rewards margin 0.693",
+      "appears_in": ["publication/blog_post.md", "publication/memo.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.rewards_margin",
+      "source_value": 0.6934
+    },
+    {
+      "claim_id": "C12",
+      "claim_text": "10 probes",
+      "appears_in": ["publication/blog_post.md", "publication/memo.md", "README.md"],
+      "source_file": "tenacious_bench_v0.1/",
+      "source_field": "distinct probe_id values across all splits",
+      "source_value": 10,
+      "probe_ids": ["PROBE-A07","PROBE-B03","PROBE-B04","PROBE-C02","PROBE-C04","PROBE-D05","PROBE-E01","PROBE-E02","PROBE-E03","PROBE-G03"]
+    },
+    {
+      "claim_id": "C13",
+      "claim_text": "169 training pairs",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.train_pairs",
+      "source_value": 169
+    },
+    {
+      "claim_id": "C14",
+      "claim_text": "93 dev/eval pairs",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.eval_pairs",
+      "source_value": 93
+    },
+    {
+      "claim_id": "C15",
+      "claim_text": "Cohen's kappa 1.0000",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md", "README.md"],
+      "source_file": "generation_scripts/inter_rater_agreement.md",
+      "source_field": "cohen_kappa",
+      "source_value": 1.0,
+      "notes": "Intra-rater agreement: 30 pairs, 2 sessions (2026-04-29 and 2026-04-30). 30/30 agreements."
+    },
+    {
+      "claim_id": "C16",
+      "claim_text": "~17 minutes training time",
+      "appears_in": ["publication/blog_post.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run training_time_seconds",
+      "source_value": 1009.9,
+      "computation": "1009.9 / 60 = 16.83 minutes ≈ 17 minutes"
+    },
+    {
+      "claim_id": "C17",
+      "claim_text": "18M trainable parameters (1.18%)",
+      "appears_in": ["publication/memo.md"],
+      "source_file": "training/training_run.log",
+      "source_field": "trainable_params",
+      "source_value": "18,087,936 / 1,543,714,816 = 1.17%",
+      "notes": "Qwen2.5-1.5B-Instruct with LoRA r=16 on 7 target modules"
+    },
+    {
+      "claim_id": "C18",
+      "claim_text": "< $1.50 total cost",
+      "appears_in": ["publication/memo.md", "publication/blog_post.md"],
+      "source_file": "cost_log.csv",
+      "source_field": "total_spend",
+      "notes": "Multi-LLM synthesis (120 pairs via OpenRouter) ~$1.50; all other phases $0.00"
+    },
+    {
+      "claim_id": "C19",
+      "claim_text": "200 training steps, 10 epochs",
+      "appears_in": ["publication/blog_post.md", "publication/memo.md"],
+      "source_file": "ablations/ablation_results.json",
+      "source_field": "training_run.total_steps / training_run.epochs",
+      "source_value": {"total_steps": 200, "epochs": 10}
+    },
+    {
+      "claim_id": "C20",
+      "claim_text": "A07: 6/6 = 100% judge accuracy",
+      "appears_in": ["publication/blog_post.md", "training/training_run.log"],
+      "source_file": "ablations/held_out_traces.jsonl",
+      "source_field": "traces where probe_id=PROBE-A07 and correct=true",
+      "source_value": "6/6",
+      "notes": "Computed from held_out_traces.jsonl; rule 1 (disqualifier suppression)"
+    },
+    {
+      "claim_id": "C21",
+      "claim_text": "G03: 8/8 = 100% judge accuracy",
+      "appears_in": ["training/training_run.log"],
+      "source_file": "ablations/held_out_traces.jsonl",
+      "source_field": "traces where probe_id=PROBE-G03 and correct=true",
+      "source_value": "8/8",
+      "notes": "Rule 3 (C-level escalation). Blog used 7/7 based on earlier count; actual is 8/8."
+    },
+    {
+      "claim_id": "C22",
+      "claim_text": "C02: 4/6 = 67% judge accuracy (lowest probe)",
+      "appears_in": ["publication/blog_post.md", "publication/memo.md"],
+      "source_file": "ablations/held_out_traces.jsonl",
+      "source_field": "traces where probe_id=PROBE-C02",
+      "source_value": "4/6",
+      "notes": "Honest unresolved failure. Context lacks structured prior_commitments field."
+    }
+  ]
+}

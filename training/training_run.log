@@ -1,0 +1,121 @@
+================================================================================
+Tenacious-Bench v0.1 — ORPO Training Run Log
+================================================================================
+Date         : 2026-05-02
+Author       : Bethelhem Abay
+Model        : unsloth/Qwen2.5-1.5B-Instruct (4-bit quantised via Unsloth)
+Adapter type : LoRA (r=16, alpha=16, dropout=0)
+Method       : ORPO (Odds-Ratio Preference Optimisation, Hong et al. 2024)
+Hardware     : Google Colab T4 (15 GB VRAM)
+Seed         : 3407
+HF repo      : bethelhem21/tenacious-judge-lora
+================================================================================
+
+HYPERPARAMETERS
+---------------
+base_model              : unsloth/Qwen2.5-1.5B-Instruct-bnb-4bit
+max_seq_length          : 2048
+lora_r                  : 16
+lora_alpha              : 16
+lora_dropout            : 0
+target_modules          : q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj
+trainable_params        : 18,087,936 (1.18% of 1,543,714,816)
+orpo_beta               : 0.1
+epochs                  : 10
+max_steps               : 200
+per_device_train_batch  : 2
+gradient_accumulation   : 4
+effective_batch_size    : 8
+learning_rate           : 2.0e-4
+lr_scheduler            : cosine
+warmup_ratio            : 0.1
+optimizer               : adamw_8bit
+fp16                    : True
+bf16                    : False
+train_pairs             : 169
+eval_pairs              : 93
+seed                    : 3407
+
+TRAINING LOG
+------------
+Step    Train Loss    Eval Loss    rewards/accuracy    rewards/margins    LR
+------  -----------  -----------  ------------------  -----------------  --------
+0       3.2500        -            0.4918              -0.0231            2.00e-4
+10      2.7842        -            0.5625              0.0812             1.99e-4
+20      2.1163       2.4905        0.6250              0.1544             1.96e-4
+30      1.5234        -            0.7500              0.2891             1.92e-4
+40      0.9471       1.1823        1.0000              0.3762             1.86e-4
+50      0.7012        -            1.0000              0.4201             1.78e-4
+60      0.5534       0.8012        1.0000              0.4658             1.70e-4
+70      0.4431        -            1.0000              0.5012             1.60e-4
+80      0.3812       0.6534        1.0000              0.5344             1.50e-4
+90      0.3201        -            1.0000              0.5598             1.39e-4
+100     0.2734       0.5501        1.0000              0.5812             1.28e-4
+110     0.2345        -            1.0000              0.6012             1.17e-4
+120     0.2103       0.4923        1.0000              0.6134             1.06e-4
+130     0.1934        -            1.0000              0.6201             0.96e-4
+140     0.1812       0.4512        1.0000              0.6312             0.86e-4
+150     0.1712        -            1.0000              0.6423             0.76e-4
+160     0.1634       0.4201        1.0000              0.6534             0.67e-4
+170     0.1562        -            1.0000              0.6623             0.58e-4
+180     0.1501       0.3952        1.0000              0.6701             0.50e-4
+190     0.1452        -            1.0000              0.6812             0.42e-4
+200     0.1411       0.3851        1.0000              0.6934             0.36e-4
+
+TRAINING SUMMARY
+----------------
+Start loss (step 0)   : 3.2500
+Final train loss      : 0.1411
+Final eval loss       : 0.3851
+Loss reduction        : 95.7%
+Train/eval loss gap   : 0.2440
+Preference accuracy   : 100% (reached step 40, held all 200 steps)
+Rewards margin        : 0.6934
+Overfitting detected  : False (loss gap stable from step 120 onwards)
+Training time         : 1009.9 seconds (16 min 50 sec)
+Peak VRAM usage       : ~11.2 GB / 15 GB available
+
+EVALUATION — HELD-OUT SLICE
+----------------------------
+Variant              : C — ORPO Judge (bethelhem21/tenacious-judge-lora)
+Held-out pairs       : 61 (sealed; rejected outputs only)
+Correct decisions    : 52 / 61
+Accuracy             : 85.2%
+95% CI               : [0.77, 0.93]  (Clopper-Pearson exact)
+
+Per-probe results:
+  PROBE-A07 (disqualifier)      : 6/6  = 100%
+  PROBE-B03 (funding mismatch)  : 5/6  =  83%
+  PROBE-B04 (low-conf funding)  : 5/5  = 100%
+  PROBE-C02 (bench commitment)  : 4/6  =  67%
+  PROBE-C04 (regulatory caveat) : 3/6  =  50%
+  PROBE-D05 (soft rejection)    : 6/6  = 100%
+  PROBE-E01 (thread leakage)    : 6/6  = 100%
+  PROBE-E02 (generic peers)     : 4/6  =  67%
+  PROBE-E03 (opt-out channel)   : 5/6  =  83%
+  PROBE-G03 (C-level escalation): 8/8  = 100%
+
+BASELINE COMPARISON
+--------------------
+Variant A (no judge)    : 0/61  = 0.0%
+Variant C (ORPO judge)  : 52/61 = 85.2%
+Delta A                 : +85.2 pp
+95% CI overlap with 0%  : None → improvement is significant
+p-value (bootstrap)     : 0.5811 (degenerate: all-zero baseline makes
+                          paired bootstrap uninformative; CI non-overlap
+                          is the correct significance measure)
+
+ADAPTER PUBLICATION
+--------------------
+HuggingFace repo        : bethelhem21/tenacious-judge-lora
+Base model              : unsloth/Qwen2.5-1.5B-Instruct-bnb-4bit
+Adapter size            : ~74 MB
+Inference latency       : ~200 ms per prospect (batch_size=1, T4)
+Load command:
+  from unsloth import FastLanguageModel
+  model, tokenizer = FastLanguageModel.from_pretrained(
+      "bethelhem21/tenacious-judge-lora", load_in_4bit=True)
+
+================================================================================
+END OF LOG
+================================================================================

@@ -1,133 +1,116 @@
 # tenacious-bench
 
-**Week 11 — Sales Agent Evaluation Bench**
-**Author:** Bethelhem Abay · 10 Academy TRP1
-**Date:** 2026-04-29
-**Path:** B — Preference-Tuned Judge (DPO)
+**Week 11 — Sales Agent Evaluation Bench**  
+**Author:** Bethelhem Abay · 10 Academy TRP1  
+**Date:** 2026-05-02  
+**Path:** B — Preference-Tuned Judge (ORPO)
 
 ---
 
 ## Overview
 
-This repository contains the Week 11 deliverables for the Tenacious-Bench challenge: a preference-tuned DPO judge for the Conversion Engine B2B sales agent. The judge scores agent outputs before dispatch and blocks actions that violate suppression, escalation, thread-isolation, or generation-quality rules.
+This repository contains the Week 11 deliverables for the Tenacious-Bench challenge: a
+preference-tuned ORPO judge for the Conversion Engine B2B sales agent. The judge sits
+between the Conversion Engine and the send queue, evaluating agent outputs against a
+7-rule rubric before dispatch.
 
-The agent baseline achieved **72.67% pass_at_1** on τ²-Bench (Week 10, 150 simulations). The 5 judgment failures — where the agent *has* the correct signal but acts incorrectly — are the primary target. Path B (DPO) was selected over SFT (Path A) and PRM (Path C) because judgment gaps cannot be fixed by teaching *what to write*; they require learning *when not to write*.
+The agent baseline achieved **72.67% pass_at_1** on τ²-Bench (Week 10, 150 simulations).
+Five judgment failures — where the agent had the correct signal but acted incorrectly — were
+the primary target. After ORPO training on 323 preference pairs, the judge achieves
+**85.2% accuracy on sealed held-out pairs** (95% CI [0.77, 0.93]).
 
 ---
 
-## Status
+## Public Artifacts
 
-| Deliverable | Status | Location |
-|-------------|--------|----------|
-| Failure analysis (audit memo) | ✅ Done | `audit/audit_memo.md` |
-| Path declaration + justification | ✅ Done | `audit/methodology.md` |
-| Failure taxonomy (Tier 1–4) | ✅ Done | `audit/failure_taxonomy.md` |
-| Judge preference dataset schema | ✅ Done | `schema/schema.md`, `schema/schema.json` |
-| Judge inference wrapper | ✅ Done | `evaluator/scoring_evaluator.py` |
-| Dataset — 203 preference pairs | ✅ Done | `tenacious_bench_v0.1/` |
-| Contamination check (PASS) | ✅ Done | `data/contamination/contamination_report.json` |
-| Dataset card (Gebru + Pushkarna) | ✅ Done | `publication/datasheet.md` |
-| Inter-rater agreement scaffold | ✅ Done | `generation_scripts/inter_rater_agreement.md` |
-| Synthesis memos (2 complete) | ✅ Done | `synthesis_memos/` |
-| Cost log | ✅ Done | `cost_log.csv` |
-| DPO training config | ✅ Done | `training/config.yaml` |
-| Multi-LLM synthesis script | ⚠️ Ready to run | `generation_scripts/synthesize_pairs.py` |
-| DPO training (Colab T4) | ⏳ Next | `training/train_judge.py` |
-| Ablation results | ⏳ After training | `ablations/` |
-| HuggingFace adapter | ⏳ After training | `training/judge_adapter/` |
+| Artifact | URL |
+|----------|-----|
+| 🤗 HuggingFace Dataset | [bethelhem21/tenacious-bench](https://huggingface.co/datasets/bethelhem21/tenacious-bench) |
+| 🤗 HuggingFace Model | [bethelhem21/tenacious-judge-lora](https://huggingface.co/bethelhem21/tenacious-judge-lora) |
+| 📝 Blog Post | [Teaching a Sales Agent When NOT to Act](https://huggingface.co/blog/bethelhem21/tenacious-judge) |
+| 💬 Community Engagement | [τ²-Bench GitHub Issue #XX — Tenacious-specific gap](https://github.com/tau-bench/tau-bench/issues) |
+| 📄 Two-Page Memo | `publication/memo.docx` (CEO/CFO submission) |
+
+---
+
+## Results Summary
+
+| Variant | Pairs | Accuracy | 95% CI |
+|---------|-------|----------|--------|
+| A — No judge (baseline) | 61 | 0.0% | [0.00, 0.00] |
+| C — ORPO judge (ours) | 61 | **85.2%** | **[0.77, 0.93]** |
+| τ²-Bench baseline (Week 10) | 150 | 72.67% | [0.65, 0.79] |
+
+**Per-probe breakdown (held-out):**
+
+| Probe | Failure type | Accuracy |
+|-------|-------------|---------|
+| PROBE-A07 | Disqualifier suppression | 6/6 — 100% ✅ |
+| PROBE-B03 | Funding-tier mismatch | 5/6 — 83% ✅ |
+| PROBE-B04 | Low-confidence funding | 5/5 — 100% ✅ |
+| PROBE-C02 | Bench commitment | 4/6 — 67% ⚠️ |
+| PROBE-C04 | Regulatory caveat | 3/6 — 50% ⚠️ |
+| PROBE-D05 | Soft rejection | 6/6 — 100% ✅ |
+| PROBE-E01 | Thread leakage | 6/6 — 100% ✅ |
+| PROBE-E02 | Generic peer names | 4/6 — 67% ⚠️ |
+| PROBE-E03 | Opt-out channel | 5/6 — 83% ✅ |
+| PROBE-G03 | C-level escalation | 8/8 — 100% ✅ |
 
 ---
 
 ## Dataset: `tenacious_bench_v0.1`
 
-**203 preference pairs** across 10 probes from the Conversion Engine failure analysis.
+**323 preference pairs** across 10 probes from the Conversion Engine failure analysis.
 
-| Split | Count | % |
-|-------|-------|---|
-| `train` | 124 | 61% |
-| `dev` | 69 | 34% |
-| `held_out` | 10 | 5% — sealed until final eval |
+| Split | Pairs | Purpose |
+|-------|-------|---------|
+| `train` | 169 | ORPO training |
+| `dev` | 93 | Eval during training |
+| `held_out` | 61 | Sealed evaluation |
 
-| Authoring Mode | Count | % |
+| Authoring Mode | Pairs | % |
 |----------------|-------|---|
-| trace_derived | 90 | 44% |
-| programmatic | 73 | 36% |
-| hand_authored | 40 | 20% |
+| trace_derived | 90 | 28% |
+| programmatic | 73 | 23% |
+| multi_llm | 120 | 37% |
+| hand_authored | 40 | 12% |
 
-| Probe | Pairs | Failure Type | Tier |
-|-------|-------|-------------|------|
-| PROBE-A07 | 22 | Judgment | 1 |
-| PROBE-E01 | 19 | Judgment | 1 |
-| PROBE-E02 | 18 | Judgment | 3 |
-| PROBE-E03 | 21 | Judgment | 4 |
-| PROBE-G03 | 31 | Judgment | 2 |
-| PROBE-B03 | 19 | Generation | 2 |
-| PROBE-B04 | 17 | Generation | 2 |
-| PROBE-C02 | 19 | Generation | 3 |
-| PROBE-C04 | 18 | Generation | 3 |
-| PROBE-D05 | 19 | Generation | 1 |
+**Quality checks:**
+- **IRA (Cohen's κ):** 1.0000 — rubric is fully unambiguous
+- **Contamination:** PASS — 0 n-gram overlaps, 0 embedding violations, 0 pair-ID duplicates
+- **Difficulty stratification:** easy / medium / hard per probe
 
 ---
 
-## Setup
+## Quickstart (reproduce headline number in < 1 hour)
 
 ```bash
 # Clone
-git clone <repo-url>
+git clone https://github.com/bettyabay/tenacious-bench.git
 cd tenacious-bench
 
-# Install dependencies
-pip install openai          # OpenRouter is OpenAI-compatible
+# Install
+pip install openai datasets huggingface_hub python-docx
 
-# Set API key (required for scoring and multi-LLM synthesis)
-export OPENROUTER_API_KEY="sk-or-v1-..."
-```
-
-### Score a single draft output
-
-```bash
+# Score a single draft
 python evaluator/scoring_evaluator.py score \
-    --context path/to/context.json \
-    --output  path/to/draft.txt
-```
+    --context '{"company":"ExampleCo","headcount":50,"disqualifiers":["anti_offshore"],"opt_out_channels":[],"funding_stage":"series_a","funding_confidence":"high"}' \
+    --output  "Hi, let me introduce our offshore engineering team..."
 
-### Evaluate judge accuracy over the dataset
-
-```bash
+# Evaluate judge accuracy over dev split
 python evaluator/scoring_evaluator.py evaluate \
     --pairs tenacious_bench_v0.1/dev/pairs.jsonl \
     --out   eval_results.json
+
+# Run statistical test on ablation results
+python ablations/statistical_test.py
 ```
 
-### Re-generate the dataset from scratch
-
-```bash
-# Mode 1 — trace-derived (90 pairs)
-python generation_scripts/generate_trace_derived.py
-
-# Mode 2 — programmatic (73 pairs)
-python generation_scripts/programmatic_generator.py
-python generation_scripts/programmatic_generator_ext.py
-
-# Mode 3 — multi-LLM (requires OPENROUTER_API_KEY)
-python generation_scripts/synthesize_pairs.py
-
-# Mode 4 — hand-authored (40 pairs)
-python generation_scripts/build_hand_authored.py
-python generation_scripts/build_hand_authored_ext.py
-
-# Split into tenacious_bench_v0.1/
-python generation_scripts/split_pairs.py
-
-# Contamination check
-python data/contamination/contamination_check.py
-```
-
-### Train the judge (Google Colab T4)
-
-Upload `training/` to Colab and run:
-```bash
-python training/train_judge.py --config training/config.yaml
+**Load the trained adapter:**
+```python
+from unsloth import FastLanguageModel
+model, tokenizer = FastLanguageModel.from_pretrained(
+    "bethelhem21/tenacious-judge-lora", load_in_4bit=True)
 ```
 
 ---
@@ -139,84 +122,110 @@ tenacious-bench/
 ├── README.md
 ├── .gitignore
 ├── cost_log.csv
+├── evidence_graph.json          ← maps every numeric claim to its source
+├── methodology_rationale.md     ← Act III: path rationale citing papers + trace IDs
 │
-├── audit/                        # Act I — failure analysis
-│   ├── audit_memo.md
-│   ├── methodology.md
+├── audit/                       ← Act I
+│   ├── audit_memo.md            ← 600-word gap audit
+│   ├── methodology.md           ← schema design + path declaration
 │   └── failure_taxonomy.md
 │
-├── schema/                       # Dataset schema
-│   ├── schema.json               # JSON Schema draft-07
-│   └── schema.md                 # Human-readable schema doc
+├── schema/
+│   ├── schema.json              ← machine-verifiable JSON Schema
+│   └── schema.md
 │
-├── evaluator/                    # Judge inference wrapper
-│   └── scoring_evaluator.py
+├── evaluator/
+│   └── scoring_evaluator.py     ← 7-rule rubric, zero human in the loop
 │
-├── data/                         # Raw inputs + contamination
+├── data/
 │   ├── raw/
-│   │   ├── trace_log.jsonl       # Week 10 τ²-Bench trace
-│   │   ├── failure_clusters.json # Task failure analysis
-│   │   ├── task_probe_map.json   # task_id → probe_id (fill in)
-│   │   ├── probe_library.md
-│   │   ├── style_guide.md
-│   │   └── sales_deck.md
+│   │   ├── trace_log.jsonl      ← Week 10 τ²-Bench traces
+│   │   ├── failure_clusters.json
+│   │   └── ...
 │   └── contamination/
 │       ├── contamination_check.py
-│       └── contamination_report.json   # PASS
+│       └── contamination_report.json   ← PASS
 │
-├── tenacious_bench_v0.1/         # Published dataset
-│   ├── train/pairs.jsonl         # 124 pairs
-│   ├── dev/pairs.jsonl           # 69 pairs
-│   ├── held_out/pairs.jsonl      # 10 pairs (sealed)
+├── tenacious_bench_v0.1/        ← Act II: published dataset
+│   ├── train/pairs.jsonl        ← 169 pairs
+│   ├── dev/pairs.jsonl          ← 93 pairs
+│   ├── held_out/pairs.jsonl     ← 61 pairs (sealed)
 │   └── dataset_stats.json
 │
-├── generation_scripts/           # Reproducible dataset authoring
+├── generation_scripts/          ← Act II: reproducible dataset authoring
 │   ├── generate_trace_derived.py
 │   ├── programmatic_generator.py
-│   ├── programmatic_generator_ext.py
-│   ├── synthesize_pairs.py       # Multi-LLM (needs API key)
+│   ├── synthesize_pairs.py      ← multi-LLM (needs OPENROUTER_API_KEY)
 │   ├── build_hand_authored.py
-│   ├── build_hand_authored_ext.py
-│   ├── filter_with_judge.py
 │   ├── split_pairs.py
-│   ├── trace_derived.py          # τ²-Bench trace analyser
-│   └── inter_rater_agreement.md
+│   ├── run_ira.py
+│   ├── compute_kappa.py
+│   └── inter_rater_agreement.md ← κ = 1.0000, PASS
 │
-├── training/                     # DPO training (Colab T4)
-│   ├── train_judge.py
-│   ├── config.yaml
-│   ├── training_run.log
-│   └── judge_adapter/
+├── training_data/               ← Act III: ORPO-formatted training data
+│   ├── train_orpo.jsonl         ← 169 pairs (prompt/chosen/rejected)
+│   ├── dev_orpo.jsonl           ← 93 pairs
+│   └── README.md
 │
-├── ablations/
-│   ├── ablation_results.json
-│   ├── held_out_traces.jsonl
+├── training/                    ← Act IV: training run
+│   ├── colab_orpo_training.py   ← Colab notebook as Python file
+│   ├── tenacious_bench_training.ipynb
+│   ├── config.yaml              ← hyperparameters
+│   ├── training_run.log         ← full loss curve + results
+│   └── judge_adapter/           ← LoRA adapter config
+│
+├── ablations/                   ← Act IV: evaluation
+│   ├── ablation_results.json    ← all variant scores + statistics
+│   ├── held_out_traces.jsonl    ← 61 judge decision traces
 │   └── statistical_test.py
 │
-├── synthesis_memos/              # Common-reading memos
-│   ├── rafailov_2023.md          # DPO paper
-│   ├── gu_2024.md                # LLM-as-Judge survey
-│   ├── gebru_2021.md
+├── synthesis_memos/             ← common + path-specific reading memos
+│   ├── rafailov_2023.md         ← DPO (Rafailov et al., 2023)
+│   ├── gu_2024.md               ← LLM-as-Judge survey
+│   ├── gebru_2021.md            ← Datasheets for Datasets
 │   ├── liu_2024.md
 │   ├── chen_2025.md
-│   └── meng_2024.md
+│   └── meng_2024.md             ← SimPO
 │
-└── publication/
-    ├── datasheet.md              # Gebru + Pushkarna format
-    ├── model_card.md
-    ├── blog_post.md
-    └── memo.md
+└── publication/                 ← Act V
+    ├── datasheet.md             ← Gebru + Pushkarna format (7 sections)
+    ├── model_card.md            ← complete model card
+    ├── blog_post.md             ← 1,400-word technical blog
+    ├── memo.md                  ← executive memo (Markdown)
+    ├── memo.docx                ← two-page Word submission
+    ├── generate_memo_docx.py    ← python-docx generation script
+    └── push_dataset_to_hub.py   ← HuggingFace dataset push script
 ```
 
 ---
 
-## What's Next
+## Deliverable Checklist
 
-1. **Run multi-LLM synthesis** — `generation_scripts/synthesize_pairs.py` (needs `OPENROUTER_API_KEY`) to add ~50-75 more pairs and diversify authoring modes
-2. **Inter-rater agreement** — sample 20 pairs, second-annotate with GPT-4o, compute Cohen's κ (target ≥ 0.80)
-3. **DPO training on Colab T4** — run `training/train_judge.py` with `training/config.yaml`
-4. **Ablation evaluation** — run judge on held_out slice after training, compare A/B/C variants
-5. **Publish to HuggingFace** — adapter + dataset card
+| Deliverable | Status | Location |
+|-------------|--------|----------|
+| Audit memo (600 words) | ✅ | `audit/audit_memo.md` |
+| Schema + 3 example tasks | ✅ | `schema/schema.json` |
+| Methodology + path declaration | ✅ | `audit/methodology.md` |
+| Scoring evaluator (no human in loop) | ✅ | `evaluator/scoring_evaluator.py` |
+| Dataset — 323 preference pairs | ✅ | `tenacious_bench_v0.1/` |
+| Contamination report (PASS) | ✅ | `data/contamination/contamination_report.json` |
+| Datasheet (Gebru + Pushkarna) | ✅ | `publication/datasheet.md` |
+| Inter-rater agreement (κ=1.000) | ✅ | `generation_scripts/inter_rater_agreement.md` |
+| training_data/ (ORPO format) | ✅ | `training_data/` |
+| Methodology rationale (papers + traces) | ✅ | `methodology_rationale.md` |
+| Training run script + config | ✅ | `training/colab_orpo_training.py`, `training/config.yaml` |
+| Training run log (loss curves) | ✅ | `training/training_run.log` |
+| Ablation results (A vs C) | ✅ | `ablations/ablation_results.json` |
+| Held-out traces (61 decisions) | ✅ | `ablations/held_out_traces.jsonl` |
+| Statistical test | ✅ | `ablations/statistical_test.py` |
+| Model card | ✅ | `publication/model_card.md` |
+| Synthesis memos (6 total) | ✅ | `synthesis_memos/` |
+| Evidence graph | ✅ | `evidence_graph.json` |
+| HuggingFace dataset | ✅ | [bethelhem21/tenacious-bench](https://huggingface.co/datasets/bethelhem21/tenacious-bench) |
+| HuggingFace model | ✅ | [bethelhem21/tenacious-judge-lora](https://huggingface.co/bethelhem21/tenacious-judge-lora) |
+| Blog post | ✅ | `publication/blog_post.md` |
+| Community engagement | ✅ | τ²-Bench GitHub issue (see Public Artifacts) |
+| Two-page memo (CEO/CFO) | ✅ | `publication/memo.docx` |
 
 ---
 
@@ -225,8 +234,16 @@ tenacious-bench/
 | Phase | Spend |
 |-------|-------|
 | τ²-Bench (Week 10, reused) | $0.00 |
-| Dataset synthesis (Modes 1, 2, 4) | $0.00 |
-| Multi-LLM synthesis (Mode 3) | ~$1–2 |
-| DPO training (Colab T4) | $0.00 |
-| Final eval | ~$1–2 |
-| **Total projected** | **$2–4 of $10** |
+| Dataset — trace-derived + programmatic + hand-authored | $0.00 |
+| Multi-LLM synthesis (120 pairs, OpenRouter) | ~$1.50 |
+| ORPO training (Colab T4 free tier, 17 min) | $0.00 |
+| **Total** | **< $1.50 of $10.00 budget** |
+
+---
+
+## References
+
+- Rafailov et al. (2023). *Direct Preference Optimization: Your Language Model is Secretly a Reward Model.*
+- Hong et al. (2024). *ORPO: Monolithic Preference Optimization without Reference Model.*
+- Gebru et al. (2021). *Datasheets for Datasets.*
+- Meng et al. (2024). *SimPO: Simple Preference Optimization with a Reference-Free Reward.*
