@@ -159,15 +159,15 @@ on 52 of 61 held-out pairs.
 | Probe | Failure type | Judge accuracy |
 |---|---|---|
 | A07 | Disqualifier (anti_offshore) | 6/6 — 100% |
-| B03 | Timing / company fit | 5/6 — 83% |
-| B04 | Low-confidence funding | 4/4 — 100% (BLOCK) |
-| C02 | Bench commitment | 3/5 — 60% |
-| C04 | Various disqualifiers | 4/6 — 67% |
-| D05 | Soft rejection | 5/5 — 100% |
-| E01 | Thread leakage / opt-out | 5/6 — 83% |
-| E02 | Generic peer names | 5/6 — 83% |
-| E03 | Opt-out channel | 5/6 — 83% |
-| G03 | C-level escalation | 7/7 — 100% (ESCALATE) |
+| B03 | Funding-tier mismatch | 5/6 — 83% |
+| B04 | Low-confidence funding | 5/5 — 100% |
+| C02 | Bench commitment ignored | 4/6 — 67% |
+| C04 | Regulatory caveat omitted | 3/6 — 50% |
+| D05 | Soft rejection doubled down | 6/6 — 100% |
+| E01 | Thread leakage | 6/6 — 100% |
+| E02 | Generic peer names | 4/6 — 67% |
+| E03 | Opt-out channel ignored | 5/6 — 83% |
+| G03 | C-level escalation missed | 8/8 — 100% |
 
 ---
 
@@ -203,7 +203,7 @@ The trained LoRA adapter is published at:
 
 **[bethelhem21/tenacious-judge-lora](https://huggingface.co/bethelhem21/tenacious-judge-lora)**
 
-Base model: `unsloth/Qwen2.5-7B-Instruct-bnb-4bit`  
+Base model: `unsloth/Qwen2.5-1.5B-Instruct-bnb-4bit`  
 Adapter size: ~74 MB  
 Load with:
 
@@ -222,9 +222,12 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 1. **More hard pairs.** Easy pairs dominated the dataset (easiest to generate
    programmatically). The hard boundary cases — where the judge adds the most
    value — were hardest to author at scale.
-2. **Longer training.** 60 steps with max_steps was conservative. The loss
-   curve had not fully plateaued; 120–200 steps would likely push the eval
-   loss below 0.40.
+2. **More steps on the hard probes.** The initial 60-step run achieved only
+   8.2% accuracy — the model was defaulting to PASS. Retraining to 200 steps
+   lifted this to 85.2%, with eval loss falling to 0.3851. C02 and C04 still
+   underperform (67% and 50%); a targeted 50-pair augmentation on those two
+   probes, with a structured `prior_commitments` field added to the schema,
+   would likely push both above 80%.
 3. **Evaluate on full τ²-Bench.** The gold standard is running the full 30-probe
    suite with the judge in the loop. Time and compute limited this to the
    held-out slice.
@@ -234,7 +237,7 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 ## One-Sentence Summary
 
 I built a preference-tuned judge using ORPO on a 323-pair dataset derived
-from Week 10 agent traces, trained it on Qwen2.5-7B in 60 steps with 88%
-loss reduction and 100% preference accuracy, and published the adapter to
-HuggingFace — directly addressing the five judgment failures that caused
+from Week 10 agent traces, trained it on Qwen2.5-1.5B in 200 steps with
+95.7% loss reduction and 100% preference accuracy, and published the adapter
+to HuggingFace — directly addressing the five judgment failures that caused
 Tenacious's agent to send emails it should have suppressed.
