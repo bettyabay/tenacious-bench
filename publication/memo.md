@@ -46,11 +46,13 @@ and missing-feature failures require architectural changes beyond the judge.
 |--------|-------|---------------|
 | Dataset size | 323 preference pairs | 10 probes, 4 authoring modes |
 | IRA (Cohen's κ) | 1.0000 | Rubric is fully unambiguous |
-| Start loss | 3.7934 | Model had no prior judge knowledge |
-| Final train loss | 0.4389 | Strong task acquisition |
-| Final eval loss | 0.4570 | No overfitting (Δ = 0.018) |
-| Preference accuracy | 100% | Judge prefers correct action on all eval pairs |
-| Model | Qwen2.5-7B-Instruct + LoRA | 40M trainable params (0.53%) |
+| Start loss | 3.25 | Model had no prior judge knowledge |
+| Final train loss | 0.1411 | Strong task acquisition |
+| Final eval loss | 0.3851 | Generalises to unseen pairs |
+| Preference accuracy | 100% | Reached at step 40, held through step 200 |
+| Rewards margin | 0.693 | Clear separation between chosen and rejected |
+| **Held-out accuracy** | **85.2% (52/61)** | **95% CI [0.77, 0.93]** |
+| Model | Qwen2.5-1.5B-Instruct + LoRA | 18M trainable params (1.18%) |
 
 ---
 

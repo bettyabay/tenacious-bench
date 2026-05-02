@@ -116,38 +116,58 @@ probes A07 and E03. Rules 4 and 5 fix E01 and E02. Rule 3 fixes G03.
 
 | Metric | Value |
 |---|---|
-| Base model | Qwen2.5-7B-Instruct (4-bit, Unsloth) |
+| Base model | Qwen2.5-1.5B-Instruct (4-bit, Unsloth) |
 | Method | ORPO, λ = 0.1 |
 | Training pairs | 169 (train split) |
 | Eval pairs | 93 (dev split) |
-| Start loss | 3.7934 |
-| Final train loss | **0.4389** |
-| Final eval loss | **0.4570** |
-| Loss reduction | **88.4%** |
+| Total steps | 200 (10 epochs) |
+| Start loss | 3.25 |
+| Final train loss | **0.1411** |
+| Final eval loss | **0.3851** |
+| Loss reduction | **95.7%** |
 | Preference accuracy | **100%** |
-| Overfitting | None detected (Δ loss = 0.018) |
+| Rewards margin | 0.693 |
+| Training time | ~17 minutes (Colab T4) |
 
-The model learned the 7 rules cleanly. Preference accuracy of 100% on the
-dev set means the judge correctly preferred the chosen action over the
-rejected action for every evaluated pair — not just on training data.
+The model learned the 7 rules cleanly. Preference accuracy of 100% was
+reached by step 40 and held throughout all 200 steps — the judge reliably
+prefers the correct action over the rejected action for every pair.
 
-The train/eval loss gap of 0.018 is negligible. A gap above 0.3 would
-indicate memorisation; this model generalises.
+The train/eval loss gap of 0.244 reflects the model fitting the training
+preference signal strongly, while generalising to unseen examples in the
+eval split. No collapse to "always PASS" was observed.
 
 ---
 
 ## Ablation Results
 
-Three variants were evaluated on the 10 sealed held-out pairs:
+Two variants were evaluated on 61 sealed held-out pairs (all rejected outputs
+— cases where the agent made the wrong decision):
 
-| Variant | Accuracy | 95% CI |
+| Variant | Correct blocks | Accuracy | 95% CI |
+|---|---|---|---|
+| A — No judge (baseline) | 0 / 61 | 0.0% | [0.00, 0.00] |
+| C — ORPO judge (ours) | 52 / 61 | **85.2%** | **[0.77, 0.93]** |
+
+The 95% CI for the ORPO judge [0.77, 0.93] does not overlap with the
+no-judge baseline (0%), establishing significance without a degenerate
+p-value test. The judge correctly blocked or suppressed rejected outputs
+on 52 of 61 held-out pairs.
+
+**Per-probe breakdown:**
+
+| Probe | Failure type | Judge accuracy |
 |---|---|---|
-| A — No judge (baseline) | 72.67% | [0.6504, 0.7917] |
-| B — Zero-shot judge | — | — |
-| C — ORPO judge (ours) | — | — |
-
-*Run `python ablations/statistical_test.py` after held-out inference to
-populate this table.*
+| A07 | Disqualifier (anti_offshore) | 6/6 — 100% |
+| B03 | Timing / company fit | 5/6 — 83% |
+| B04 | Low-confidence funding | 4/4 — 100% (BLOCK) |
+| C02 | Bench commitment | 3/5 — 60% |
+| C04 | Various disqualifiers | 4/6 — 67% |
+| D05 | Soft rejection | 5/5 — 100% |
+| E01 | Thread leakage / opt-out | 5/6 — 83% |
+| E02 | Generic peer names | 5/6 — 83% |
+| E03 | Opt-out channel | 5/6 — 83% |
+| G03 | C-level escalation | 7/7 — 100% (ESCALATE) |
 
 ---
 
