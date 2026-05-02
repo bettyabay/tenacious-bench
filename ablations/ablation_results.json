@@ -1,1 +1,50 @@
-{}
+{
+  "meta": {
+    "date": "2026-05-02",
+    "author": "Bethelhem Abay",
+    "method": "ORPO preference-tuned judge (Path B)",
+    "base_model": "unsloth/Qwen2.5-7B-Instruct-bnb-4bit",
+    "adapter": "bethelhem21/tenacious-judge-lora",
+    "held_out_pairs": 10,
+    "note": "Run ablations/run_held_out_inference.py in Colab to populate variant labels, then run statistical_test.py"
+  },
+  "training_run": {
+    "method": "ORPO",
+    "orpo_lambda": 0.1,
+    "epochs": 3,
+    "max_steps": 60,
+    "train_pairs": 169,
+    "eval_pairs": 93,
+    "start_loss": 3.7934,
+    "final_train_loss": 0.4389,
+    "final_eval_loss": 0.4570,
+    "loss_reduction_pct": 88.4,
+    "rewards_accuracy": 1.0,
+    "rewards_margin": 0.4614,
+    "overfitting_detected": false
+  },
+  "baseline": {
+    "metric": "pass_at_1",
+    "value": 0.7267,
+    "ci_95": [0.6504, 0.7917],
+    "source": "tau2-bench Week 10 reused per challenge rules",
+    "tasks": 30,
+    "trials": 5
+  },
+  "variants": {
+    "A_no_judge": {
+      "description": "Baseline agent with no judge layer",
+      "labels": []
+    },
+    "B_zero_shot": {
+      "description": "Zero-shot GPT-4o-mini judge (scoring_evaluator.py, 7 rules)",
+      "labels": []
+    },
+    "C_orpo_judge": {
+      "description": "ORPO fine-tuned judge (bethelhem21/tenacious-judge-lora)",
+      "labels": []
+    }
+  },
+  "statistics": {},
+  "comparisons": {}
+}
