@@ -25,10 +25,10 @@ the primary target. After ORPO training on 323 preference pairs, the judge achie
 
 | Artifact | URL |
 |----------|-----|
-| 🤗 HuggingFace Dataset | [bethelhem21/tenacious-bench](https://huggingface.co/datasets/bethelhem21/tenacious-bench) |
-| 🤗 HuggingFace Model | [bethelhem21/tenacious-judge-lora](https://huggingface.co/bethelhem21/tenacious-judge-lora) |
+| 🤗 HuggingFace Dataset | [bethelhem21/tenacious-bench](https://huggingface.co/datasets/bethelhem21/tenacious-bench) — 323 pairs, 3 splits |
+| 🤗 HuggingFace Model (LoRA adapter) | [bethelhem21/tenacious-judge-lora](https://huggingface.co/bethelhem21/tenacious-judge-lora) — Qwen2.5-1.5B ORPO judge |
 | 📝 Blog Post | [Teaching a Sales Agent When NOT to Act](https://huggingface.co/blog/bethelhem21/tenacious-judge) |
-| 💬 Community Engagement | [τ²-Bench GitHub Issue #XX — Tenacious-specific gap](https://github.com/tau-bench/tau-bench/issues) |
+| 💬 Community Engagement | [τ²-Bench GitHub Issue — Tenacious-specific gap](https://github.com/tau-bench/tau-bench/issues) |
 | 📄 Two-Page Memo | `publication/memo.docx` (CEO/CFO submission) |
 
 ---
