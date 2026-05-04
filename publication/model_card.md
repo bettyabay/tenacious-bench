@@ -193,7 +193,27 @@ print(decision)  # SUPPRESS\nProspect has anti_offshore disqualifier...
    sent to.
 
 5. **200ms inference latency** (batch size 1, T4). Not suitable for real-time use cases.
-   Designed for async pre-send queues.
+   Designed for async pre-send queues. See latency breakdown below.
+
+---
+
+## Inference Latency Breakdown (Updated Week 12)
+
+Based on prefill vs. decode analysis — full write-up at [Medium](https://medium.com/@abay.betty.21/prefill-vs-decode-where-your-inference-latency-actually-goes-a796c3495afa).
+
+- **Observed latency:** ~200ms on T4 GPU (batch size 1)
+- **Token ratio:** 500–1000 prompt tokens / 50–100 output tokens (~10:1)
+- **Dominant phase:** Prefill (compute-bound parallel forward pass)
+- **Optimization priority:** Compress prompt length, not output length
+
+The 200ms is not a single uniform cost. It splits into two mechanically distinct phases:
+
+| Phase | Bottleneck | Scales with |
+|-------|-----------|-------------|
+| Prefill | GPU compute (FLOP/s) | Prompt token count |
+| Decode | Memory bandwidth (GB/s) | Output token count |
+
+At a 10:1 prompt-to-output ratio, prefill is the dominant contributor. Reducing average prompt length from ~750 to ~400 tokens is expected to reduce total latency by ~30–35%, conditional on a measured prefill coefficient of ~0.2ms/token. Empirical verification via `torch.cuda.synchronize()` timing is the next step before optimizing.
 
 ---
 
