@@ -143,7 +143,7 @@ It sits between the Tenacious Conversion Engine and the email send queue. Before
 | Held-out accuracy | **85.2%** (52 / 61 pairs) |
 | 95% confidence interval | [0.77, 0.93] |
 | Training time | ~20 minutes on Colab T4 (free tier) |
-| Training cost | $0.00 |
+| Compute | Colab T4 free tier (~$1.50 total incl. data synthesis) |
 | Adapter size | ~74 MB |
 | Baseline (no judge) | 0.0% (0 / 61) |
 

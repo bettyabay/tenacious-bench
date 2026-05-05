@@ -72,7 +72,7 @@ def badge(x, y, w, h, color_hex, label, value):
     draw.text((x + w//2 - vb//2, y + 26), value, font=vf, fill=(255, 255, 255))
 
 badge(60,  185, 200, 58, "#16a34a", "Held-out Accuracy", "85.2%")
-badge(276, 185, 200, 58, "#0ea5e9", "Training Cost",     "$0.00")
+badge(276, 185, 200, 58, "#0ea5e9", "Compute",           "Colab T4 Free")
 badge(492, 185, 200, 58, "#7c3aed", "Preference Pairs",  "323")
 
 def pill(x, y, w, h, color_hex, text):
