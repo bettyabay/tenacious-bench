@@ -31,6 +31,8 @@ configs:
     path: data/held_out/pairs.jsonl
 ---
 
+![Tenacious-Bench Banner](banner.png)
+
 # 📊 Tenacious-Bench: B2B Sales Outreach Judge Preference Dataset
 
 **Version:** v0.1  

@@ -95,6 +95,8 @@ model-index:
       verified: false
 ---
 
+![Tenacious Judge Banner](banner.png)
+
 # 🤖 Tenacious Judge LoRA — B2B Sales Outreach Pre-Send Judge
 
 **Base model:** `unsloth/Qwen2.5-1.5B-Instruct-bnb-4bit`  
