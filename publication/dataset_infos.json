@@ -1,0 +1,31 @@
+{
+  "default": {
+    "description": "Tenacious-Bench: B2B Sales Outreach Judge Preference Dataset — 323 preference pairs across 10 failure probes for training and evaluating a pre-send sales outreach judge.",
+    "citation": "@misc{tenacious-bench-2026, author={Bethelhem Abay}, title={Tenacious-Bench}, year={2026}, url={https://huggingface.co/datasets/bethelhem21/tenacious-bench}}",
+    "homepage": "https://github.com/bettyabay/tenacious-bench",
+    "license": "mit",
+    "features": {
+      "pair_id": {"dtype": "string", "_type": "Value"},
+      "probe_id": {"dtype": "string", "_type": "Value"},
+      "failure_type": {"dtype": "string", "_type": "Value"},
+      "severity_tier": {"dtype": "int64", "_type": "Value"},
+      "authoring_mode": {"dtype": "string", "_type": "Value"},
+      "annotator": {"dtype": "string", "_type": "Value"},
+      "split": {"dtype": "string", "_type": "Value"},
+      "difficulty": {"dtype": "string", "_type": "Value"},
+      "context": {"dtype": "string", "_type": "Value"},
+      "chosen": {"dtype": "string", "_type": "Value"},
+      "rejected": {"dtype": "string", "_type": "Value"},
+      "judge_label": {"dtype": "string", "_type": "Value"}
+    },
+    "splits": {
+      "train": {"name": "train", "num_bytes": 0, "num_examples": 169},
+      "dev": {"name": "dev", "num_bytes": 0, "num_examples": 93},
+      "held_out": {"name": "held_out", "num_bytes": 0, "num_examples": 61}
+    },
+    "download_checksums": {},
+    "download_size": 0,
+    "dataset_size": 0,
+    "size_in_bytes": 0
+  }
+}
