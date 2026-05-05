@@ -22,7 +22,7 @@ datasets:
 - bethelhem21/tenacious-bench
 metrics:
 - accuracy
-thumbnail: banner.svg
+thumbnail: banner.png
 co2_eq_emissions:
   emissions: 0
   source: Colab T4 free tier — 17 minutes training

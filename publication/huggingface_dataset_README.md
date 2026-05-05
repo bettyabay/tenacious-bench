@@ -19,7 +19,16 @@ task_categories:
 pretty_name: "Tenacious-Bench: B2B Sales Outreach Judge Preference Dataset"
 size_categories:
 - n<1K
-thumbnail: banner.svg
+thumbnail: banner.png
+configs:
+- config_name: default
+  data_files:
+  - split: train
+    path: data/train/pairs.jsonl
+  - split: dev
+    path: data/dev/pairs.jsonl
+  - split: held_out
+    path: data/held_out/pairs.jsonl
 ---
 
 # 📊 Tenacious-Bench: B2B Sales Outreach Judge Preference Dataset
