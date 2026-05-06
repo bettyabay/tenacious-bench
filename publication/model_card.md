@@ -99,6 +99,8 @@ model-index:
 
 # 🤖 Tenacious Judge LoRA — B2B Sales Outreach Pre-Send Judge
 
+Autonomous B2B sales agents are powerful — but left unchecked, they will email the wrong people, cite unverified funding figures, and ignore opt-out requests. **Tenacious Judge** is a preference-tuned LoRA adapter that sits between the agent and the send queue, evaluating every proposed outreach action against a 7-rule safety rubric before it reaches a prospect. Trained with ORPO on 323 human-curated preference pairs across 10 failure probes — covering disqualifier blindness, thread leakage, C-level escalation misses, and more — it achieves **85.2% accuracy on sealed held-out data**, running in ~200ms on a free Colab T4. Read the full story on [Medium →](https://medium.com/@abay.betty.21/teaching-a-sales-agent-when-not-to-act-db1d3b711488)
+
 **Base model:** `unsloth/Qwen2.5-1.5B-Instruct-bnb-4bit`  
 **Adapter type:** LoRA (ORPO)  
 **Author:** [Bethelhem Abay](https://medium.com/@abay.betty.21) · 10 Academy TRP1  

@@ -194,8 +194,8 @@ def parse_args() -> argparse.Namespace:
 
     # Single scoring
     score_parser = subparsers.add_parser("score", help="Score one draft output.")
-    score_parser.add_argument("--context", required=True, help="Path to context JSON file.")
-    score_parser.add_argument("--output", required=True, help="Path to draft output text file.")
+    score_parser.add_argument("--context", required=True, help="Context as JSON string or path to JSON file.")
+    score_parser.add_argument("--output", required=True, help="Draft output as text string or path to text file.")
 
     # Batch evaluation
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate judge accuracy over judge_pairs.jsonl.")
@@ -205,14 +205,58 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def parse_dict_string(s: str) -> dict:
+    """Parse a dict-like string like {key:value, key2:[item1,item2]} into a dict."""
+    s = s.strip('{}')
+    pairs = s.split(',')
+    d = {}
+    for pair in pairs:
+        if ':' not in pair:
+            continue
+        key, value = pair.split(':', 1)
+        key = key.strip()
+        value = value.strip()
+        if value.startswith('[') and value.endswith(']'):
+            # List
+            items = value[1:-1].split(',')
+            parsed_items = []
+            for item in items:
+                item = item.strip()
+                if item.startswith('"') and item.endswith('"'):
+                    parsed_items.append(item[1:-1])
+                elif item.startswith("'") and item.endswith("'"):
+                    parsed_items.append(item[1:-1])
+                else:
+                    parsed_items.append(item)
+            d[key] = parsed_items
+        elif value.startswith('"') and value.endswith('"'):
+            d[key] = value[1:-1]
+        elif value.startswith("'") and value.endswith("'"):
+            d[key] = value[1:-1]
+        elif value.isdigit():
+            d[key] = int(value)
+        else:
+            d[key] = value
+    return d
+
+
 def main() -> None:
     args = parse_args()
 
     if args.command == "score":
-        with open(args.context, encoding="utf-8") as fh:
-            context = json.load(fh)
-        with open(args.output, encoding="utf-8") as fh:
-            draft_output = fh.read()
+        # Load context: try as JSON string first, then as dict string, then as file
+        context_str = args.context.strip('\'"')
+        try:
+            context = json.loads(context_str)
+        except json.JSONDecodeError:
+            try:
+                context = parse_dict_string(context_str)
+            except:
+                with open(args.context, encoding="utf-8") as fh:
+                    context = json.load(fh)
+        
+        # Load output: treat as text
+        draft_output = args.output.strip('\'"')
 
         verdict = call_judge(context, draft_output)
         print(json.dumps(verdict.to_dict(), indent=2))

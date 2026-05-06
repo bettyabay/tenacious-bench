@@ -11,3 +11,5 @@ training/judge_adapter/adapter_model.safetensors
 
 # Scratch
 *.tmp
+temp_context.json
+temp_output.txt
